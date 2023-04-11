@@ -1,0 +1,97 @@
+{
+  "project_info": {
+    "project_number": "1077552835462",
+    "project_id": "login-register-firebase-3f63f",
+    "storage_bucket": "login-register-firebase-3f63f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077552835462:android:be2367c594f4be52181a07",
+        "android_client_info": {
+          "package_name": "com.example.licenta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1077552835462-708qvurhdjk1hs9mnhi7r7j7dj1n5t5b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYIExMI0B3h1CIdJhYoV3RWlmJYN5Zv4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1077552835462-708qvurhdjk1hs9mnhi7r7j7dj1n5t5b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077552835462:android:c5d52279ec4e66af181a07",
+        "android_client_info": {
+          "package_name": "com.example.login"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1077552835462-708qvurhdjk1hs9mnhi7r7j7dj1n5t5b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYIExMI0B3h1CIdJhYoV3RWlmJYN5Zv4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1077552835462-708qvurhdjk1hs9mnhi7r7j7dj1n5t5b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077552835462:android:518c1325f9c11b94181a07",
+        "android_client_info": {
+          "package_name": "com.example.loginlicenta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1077552835462-708qvurhdjk1hs9mnhi7r7j7dj1n5t5b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYIExMI0B3h1CIdJhYoV3RWlmJYN5Zv4E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1077552835462-708qvurhdjk1hs9mnhi7r7j7dj1n5t5b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

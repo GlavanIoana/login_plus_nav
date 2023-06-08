@@ -9,23 +9,37 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.navigation.NavigationBarView;
+import com.example.licenta.Eisenhower.EisenhowerFragment;
+import com.example.licenta.Pomodoro.PomodoroFragment;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     FirebaseAuth auth;
     FirebaseUser user;
-    TextView tvUserEmail;
     private DrawerLayout drawerLayout;
+    private FirebaseFirestore db;
+    private ArrayList<Event> listaEvenimente;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +81,76 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new CalendarFragment()).commit();
             navigationView.setCheckedItem(R.id.nav_calendar);
         }
+
+        db=FirebaseFirestore.getInstance();
+        Map<String, Object> userobj = new HashMap<>();
+        userobj.put("email", user.getEmail());
+        db.collection("user").document(user.getUid()).set(userobj)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Log.d("MainActivity", "DocumentSnapshot successfully written!");
+            }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("MainActivity", "Error writing document", e);
+                    }
+                });
+
+        listaEvenimente=new ArrayList<>();
+        db.collection("event").whereEqualTo("userID",user.getUid()).orderBy("day").orderBy("time start").get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                            listaEvenimente.add(citireEvenimentBazaDeDate(documentSnapshot));
+                        }
+                    }
+                });//        db.collection("event").whereEqualTo("userID", user.getUid())
+//                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                if (task.isSuccessful()) {
+//                    for (QueryDocumentSnapshot doc : task.getResult()) {
+//                        switch (doc.getData().get("status").toString()) {
+//                            case "NEINCEPUT":
+//                                nrNeinceput++;
+//                                break;
+//                            case "INCEPUT":
+//                                nrInceput++;
+//                                break;
+//                            case "FINALIZAT":
+//                                nrFinalizat++;
+//                                break;
+//                        }
+//                    }
+//                    Log.d("MainActivity",StatusEv.NEINCEPUT+" - "+nrNeinceput);
+//                    Log.d("MainActivity",StatusEv.INCEPUT+" - "+ nrInceput);
+//                    Log.d("MainActivity",StatusEv.FINALIZAT+" - "+nrFinalizat);
+//
+//                } else {
+//                    Log.d("MainActivity", "Error getting documents: ", task.getException());
+//                }
+//            }});
     }
 
+    private Event citireEvenimentBazaDeDate(QueryDocumentSnapshot document) {
+        String denumire=document.getString("name");
+        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String strData=document.getString("day");
+        LocalDate data=LocalDate.parse(strData,formatter);
+        DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern("HH:mm");
+        String strOraSt=document.getString("time start");
+        LocalTime oraStart=LocalTime.parse(strOraSt,timeFormatter);
+        String strOraSf=document.getString("time final");
+        LocalTime oraSfarsit=LocalTime.parse(strOraSf,timeFormatter);
+        StatusEv statusEv=StatusEv.valueOf(document.getString("status"));
+        Categories category= Categories.valueOf(document.getString("category"));
+        Event event=new Event(denumire,data,oraStart,oraSfarsit,statusEv,category==null?Categories.ALTELE:category);
+        return event;
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -77,16 +159,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new CalendarFragment()).commit();
                 break;
             case R.id.nav_lista:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ListaFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,ListaFragment.newInstance(listaEvenimente)).commit();
                 break;
             case R.id.nav_setari:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SetariFragment()).commit();
                 break;
             case R.id.nav_statistici:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new StatisticiFragment()).commit();
+//                        StatisticiFragment.newInstance(nrNeinceput,nrInceput,nrFinalizat)).commit();
                 break;
             case R.id.nav_study:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new InvatareFragment()).commit();
+                break;
+            case R.id.nav_pomodoro:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,PomodoroFragment.newInstance(listaEvenimente)).commit();
+                break;
+            case R.id.nav_eisenhower:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,EisenhowerFragment.newInstance(listaEvenimente)).commit();
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();

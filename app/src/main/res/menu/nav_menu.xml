@@ -34,6 +34,20 @@
     </group>
 
     <item
+        android:title="@string/tehnici_time_management">
+        <menu>
+            <item
+                android:id="@+id/nav_pomodoro"
+                android:icon="@drawable/ic_baseline_timer_24"
+                android:title="@string/pomodoro"/>
+            <item
+                android:id="@+id/nav_eisenhower"
+                android:icon="@drawable/ic_baseline_border_all_24"
+                android:title="@string/matricea_eisenhower"/>
+        </menu>
+    </item>
+
+    <item
         android:title="">
         <menu>
             <item

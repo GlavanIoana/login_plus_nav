@@ -9,5 +9,34 @@
     <color name="white">#FFFFFFFF</color>
     <color name="teal">#57C5B6</color>
     <color name="bleumarin">#002B5B</color>
+    <color name="lightgray">#EEE</color>
+    <color name="gray">#888</color>
+    <color name="lightteal">#B9EDDD</color>
+    <color name="lighterteal">#C6F3E5</color>
+    <color name="pinkish">#FFFBEB</color>
+    <color name="red">#E74646</color>
+    <color name="green">#5AA469</color>
+    <color name="bleo">#396EB0</color>
+    <color name="yellow">#F1CA3D</color>
+    <color name="pink">#FFEBEB</color>
+    <color name="lightbleo">#E0EEFF</color>
+    <color name="lightgreen">#E0FFE6</color>
+    <color name="lightyellow">#FFF9DF</color>
+<!--    <color name="calred">#F61010</color>-->
+<!--    <color name="calgreen">#10F14B</color>-->
+    <color name="calpink">#F6107B</color>
+    <color name="calyellow">#EFFE11</color>
+<!--    <color name="calred">#FF2D11</color>-->
+    <color name="calred">#FC103A</color>
+    <color name="calturqouse">#0FEAD3</color>
+    <color name="calblue">#14C8EA</color>
+    <color name="caldarkblue">#2A54EE</color>
+    <color name="calorange">#FFB611</color>
+<!--    <color name="calblue">#3035EF</color>-->
+    <color name="calpurple">#8121ED</color>
+    <color name="caldarkorange">#FF6A11</color>
+    <color name="calgreen">#10F31F</color>
+
+
 
 </resources>

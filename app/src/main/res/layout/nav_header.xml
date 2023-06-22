@@ -6,7 +6,7 @@
     android:gravity="bottom"
 
     android:padding="16dp"
-    android:background="@drawable/nav_header_background"
+    android:background="@color/teal"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView

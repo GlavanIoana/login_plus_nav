@@ -34,6 +34,7 @@
     <string name="ora_start">Ora start</string>
     <string name="interval_orar">Interval orar:</string>
     <string name="adauga_o_sarcina">Adauga o sarcina</string>
+    <string name="seteaza_un_obiectiv">Seteaza un obiectiv</string>
     <string name="ora_sfarsit">Ora sfarsit</string>
     <string name="data">Data:</string>
     <string name="adauga">Adauga</string>
@@ -59,4 +60,49 @@
     <string name="urgent">URGENT</string>
     <string name="neurgent">NEURGENT</string>
     <string name="alege_activitate">Alege activitate</string>
+    <string name="durata">Durata:</string>
+    <string name="frecventa">Frecventa:</string>
+    <string name="descriere">Descriere</string>
+    <string name="status">Status</string>
+    <string name="_12_00">12:00</string>
+    <string name="iunie">iunie</string>
+    <string name="_6">6</string>
+    <string name="string_default">-</string>
+    <string name="editeaza_eveniment">Editeaza eveniment</string>
+    <string name="alege_un_eveniment">Alege un eveniment:</string>
+    <string name="lu">Lu</string>
+    <string name="ma">Ma</string>
+    <string name="mi">Mi</string>
+    <string name="jo">Jo</string>
+    <string name="vi">Vi</string>
+    <string name="sa">Sa</string>
+    <string name="du">Du</string>
+    <string name="_19">19</string>
+    <string name="_20">20</string>
+    <string name="_21">21</string>
+    <string name="_22">22</string>
+    <string name="_23">23</string>
+    <string name="_24">24</string>
+    <string name="_25">25</string>
+    <string-array name="unitati_frecventa">
+        <item>zi</item>
+        <item>saptamana</item>
+        <item>luna</item>
+    </string-array>
+    <string-array name="durate">
+        <item>15min</item>
+        <item>30min</item>
+        <item>45min</item>
+        <item>1h</item>
+        <item>1h30min</item>
+        <item>2h</item>
+        <item>2h30min</item>
+        <item>3h</item>
+        <item>3h30min</item>
+        <item>4h</item>
+        <item>4h30min</item>
+        <item>5h</item>
+        <item>5h30min</item>
+        <item>6h</item>
+    </string-array>
 </resources>

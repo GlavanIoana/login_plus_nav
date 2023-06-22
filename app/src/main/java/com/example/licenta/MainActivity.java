@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FirebaseUser user;
     private DrawerLayout drawerLayout;
     private FirebaseFirestore db;
-    private ArrayList<Event> listaEvenimente;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,13 +98,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 });
 
-        listaEvenimente=new ArrayList<>();
         db.collection("event").whereEqualTo("userID",user.getUid()).orderBy("day").orderBy("time start").get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
-                            listaEvenimente.add(citireEvenimentBazaDeDate(documentSnapshot));
+                            Event.eventsList.add(citireEvenimentBazaDeDate(documentSnapshot));
                         }
                     }
                 });//        db.collection("event").whereEqualTo("userID", user.getUid())
@@ -159,10 +157,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new CalendarFragment()).commit();
                 break;
             case R.id.nav_lista:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,ListaFragment.newInstance(listaEvenimente)).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,ListaFragment.newInstance(Event.eventsList)).commit();
                 break;
             case R.id.nav_setari:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SetariFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new WeekViewFragment()).commit();
                 break;
             case R.id.nav_statistici:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new StatisticiFragment()).commit();
@@ -172,10 +170,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new InvatareFragment()).commit();
                 break;
             case R.id.nav_pomodoro:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,PomodoroFragment.newInstance(listaEvenimente)).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,PomodoroFragment.newInstance(Event.eventsList)).commit();
                 break;
             case R.id.nav_eisenhower:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,EisenhowerFragment.newInstance(listaEvenimente)).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,EisenhowerFragment.newInstance(Event.eventsList)).commit();
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();

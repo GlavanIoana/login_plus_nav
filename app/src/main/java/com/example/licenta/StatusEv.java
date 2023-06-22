@@ -4,5 +4,6 @@ public enum StatusEv {
     NEINCEPUT,
     INCEPUT,
     FINALIZAT,
+    NEFINALIZAT,
     NEEFECTUAT
 }

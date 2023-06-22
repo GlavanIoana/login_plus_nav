@@ -39,7 +39,7 @@ public class PomodoroActivity extends AppCompatActivity {
         for (Event ev: PomodoroFragment.listaEvenimente){
             spnLista.add(ev.getName());
         }
-        Log.d("PomodoroActivity", String.valueOf(spnLista.size()));
+        Log.d("PomodoroActivitySpnListaSize", String.valueOf(spnLista.size()));
         spnPomodoro.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item,spnLista));
 
         skbTimpLucru=findViewById(R.id.skbTimpLucru);

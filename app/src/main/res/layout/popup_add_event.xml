@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="500dp"
+    android:layout_height="wrap_content"
     android:layout_marginStart="10dp"
     android:layout_marginTop="10dp"
     android:layout_marginEnd="10dp"
@@ -24,6 +24,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView">
+        <RadioButton
+            android:id="@+id/rbProgramFix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Program fix"
+            android:textSize="16dp"
+            android:textColor="@color/teal_700"
+            android:checked="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"/>
+        <RadioButton
+            android:id="@+id/rbProgramFlexibil"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Program flexibil"
+            android:textSize="16dp"
+            android:textColor="@color/teal_700"
+            android:layout_marginStart="16dp"/>
+
+    </RadioGroup>
     <Spinner
         android:id="@+id/spnCategory"
         android:layout_width="match_parent"
@@ -35,7 +63,7 @@
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"/>
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup"/>
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/tietDenumire"
@@ -52,6 +80,25 @@
         app:layout_constraintTop_toBottomOf="@+id/spnCategory" />
 
     <LinearLayout
+        android:id="@+id/llErrorDenumire"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tietDenumire"
+        android:layout_marginStart="16dp"
+        android:visibility="gone">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_error_24" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Acest camp este obligatoriu!"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/llData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -63,7 +110,7 @@
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tietDenumire">
+        app:layout_constraintTop_toBottomOf="@+id/llErrorDenumire">
 
         <TextView
             android:id="@+id/tvData"
@@ -83,6 +130,25 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/llErrorData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llData"
+        android:layout_marginStart="16dp"
+        android:visibility="gone">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_error_24" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Acest camp este obligatoriu!"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/llOraStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -92,7 +158,7 @@
         android:padding="8dp"
         android:layout_margin="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llData"
+        app:layout_constraintTop_toBottomOf="@+id/llErrorData"
         app:layout_constraintEnd_toStartOf="@+id/llOraSfarsit">
 
         <TextView
@@ -122,7 +188,7 @@
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/llOraStart"
-        app:layout_constraintTop_toBottomOf="@+id/llData">
+        app:layout_constraintTop_toBottomOf="@+id/llErrorData">
 
         <TextView
             android:id="@+id/tvOraSfarsit"
@@ -142,6 +208,86 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvDurata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:text="@string/durata"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llOraStart"
+        android:visibility="gone"/>
+
+    <Spinner
+        android:id="@+id/spnDurata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_shape"
+        android:backgroundTint="@color/lighterteal"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/tvDurata"
+        app:layout_constraintTop_toBottomOf="@+id/llOraSfarsit"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:entries="@array/durate"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvFrecventa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:text="@string/frecventa"
+        android:textSize="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDurata"
+        android:visibility="gone"/>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tietNrFrecventa"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_shape"
+        android:backgroundTint="@color/lighterteal"
+        android:padding="8dp"
+        android:layout_margin="16dp"
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/tvFrecventa"
+        app:layout_constraintTop_toBottomOf="@+id/spnDurata"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvAux"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:text=" ori pe "
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/tietNrFrecventa"
+        app:layout_constraintTop_toBottomOf="@+id/spnDurata"
+        android:visibility="gone"/>
+
+    <Spinner
+        android:id="@+id/spnUnitateFrecventa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_shape"
+        android:backgroundTint="@color/lighterteal"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:textSize="20dp"
+        app:layout_constraintStart_toEndOf="@+id/tvAux"
+        app:layout_constraintTop_toBottomOf="@+id/spnDurata"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:entries="@array/unitati_frecventa"
+        android:visibility="gone"/>
+
+
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
@@ -159,7 +305,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llOraStart" />
+        app:layout_constraintTop_toBottomOf="@+id/tietNrFrecventa" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

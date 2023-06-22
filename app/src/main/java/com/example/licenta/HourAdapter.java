@@ -4,15 +4,21 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -48,15 +54,66 @@ public class HourAdapter extends ArrayAdapter<HourEvent>
             @Override
             public void onClick(View v) {
                 // get the event at the clicked position
-                HourEvent clickedEvent = getItem(position);
+                HourEvent clickedHourEvent = getItem(position);
                 // do something with the event
-                Log.d("HourAdapter", "Clicked on event " + clickedEvent.getTime());
+                Log.d("HourAdapter", "Clicked on event " + clickedHourEvent.getTime());
+                ArrayList<Event> clickedEvents = clickedHourEvent.getEvents();
 
+                // Create and configure the popup window
+                PopupWindow popupWindow = createPopupWindow(clickedEvents, v);
+
+                // Display the popup window
+                popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
 //                ref.createPopupWindow(CalendarUtils.selectedDate,oraStartEv);
             }
         });
 
         return convertView;
+    }
+
+    private PopupWindow createPopupWindow(ArrayList<Event> clickedEvents, View v) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View popupView = inflater.inflate(R.layout.popup_select_event, null);
+
+        // Configure the popup window
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+
+        // Find the ListView inside the popup layout
+        ListView listView = popupView.findViewById(R.id.lvEvents);
+
+        // Create an adapter for the events
+        EventAdapter eventAdapter = new EventAdapter(getContext(),R.layout.lv_event_view, clickedEvents,inflater);
+
+        // Set the adapter to the ListView
+        listView.setAdapter(eventAdapter);
+
+        // Set the item click listener for the ListView
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected event
+                Event selectedEvent = eventAdapter.getItem(position);
+
+                // Perform actions with the selected event
+                // For example, you can open a new activity to modify the event
+
+                // Dismiss the popup window
+                popupWindow.dismiss();
+            }
+        });
+
+        // Calculate the x and y offsets for the popup window
+        int[] anchorLocation = new int[2];
+        v.getLocationOnScreen(anchorLocation);
+        int xOff = (int) (anchorLocation[0] - popupView.getWidth() / 2f + v.getWidth() / 2f);
+        int yOff = anchorLocation[1] - popupView.getHeight();
+
+        // Set the x and y offsets for the popup window
+        popupWindow.showAtLocation(v, Gravity.NO_GRAVITY, xOff, yOff);
+
+        return popupWindow;
     }
 
     private void setHour(View convertView, LocalTime time) {
@@ -100,7 +157,7 @@ public class HourAdapter extends ArrayAdapter<HourEvent>
 
     private void setEvent(TextView textView, Event event) {
         textView.setText(event.getName());
-        int culoare=R.color.calpink;
+        int culoare;
         GradientDrawable shape= (GradientDrawable) textView.getBackground().mutate();
         switch (event.getCategory()){
             case MUNCA: culoare=R.color.calblue;break;

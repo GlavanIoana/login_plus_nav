@@ -16,13 +16,12 @@ public class CalendarUtils {
     public static long toLong(LocalDate date,LocalTime time){
         LocalDateTime dateTime=date.atTime(time);
         Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
-        long millis = instant.toEpochMilli();
-        return millis;
+        return instant.toEpochMilli();
     }
 
     public static String formattedDate(LocalDate date)
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return date.format(formatter);
     }
 

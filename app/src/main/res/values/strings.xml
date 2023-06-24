@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Licenta</string>
+    <string name="app_name">MyTime</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="acasa">Acasa</string>
@@ -84,6 +84,15 @@
     <string name="_23">23</string>
     <string name="_24">24</string>
     <string name="_25">25</string>
+    <string name="eveniment_unic">Eveniment unic</string>
+    <string name="obiectiv">Obiectiv</string>
+    <string name="acest_camp_este_obligatoriu">Acest camp este obligatoriu!</string>
+    <string name="ori_pe">ori pe</string>
+    <string name="eveniment_nou">Eveniment nou</string>
+    <string name="monday">Monday</string>
+    <string name="calendar">Calendar</string>
+    <string name="ioana">Ioana</string>
+    <string name="nu_sunt_evenimente_programate_in_aceasta_zi">Nu sunt evenimente programate in aceasta zi!</string>
     <string-array name="unitati_frecventa">
         <item>zi</item>
         <item>saptamana</item>

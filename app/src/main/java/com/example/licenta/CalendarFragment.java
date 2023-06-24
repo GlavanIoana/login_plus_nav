@@ -84,7 +84,7 @@ public class CalendarFragment extends Fragment {
         TextView tvOra = view.findViewById(R.id.tvTime);
 
         CalendarUtils.selectedDate = LocalDate.now();
-        setDayView();
+//        setDayView();
 
         btnNext.setOnClickListener(v -> {
             CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusDays(1);
@@ -105,7 +105,7 @@ public class CalendarFragment extends Fragment {
 //                createPopupWindow();
 //            }
 //        });
-        Log.d("CalendarFragment", "No of reminders: " + Reminder.reminders.size());
+        Log.d("CalendarFragment", "No of reminders: " + Notification.reminders.size());
 
 //        db.collection("event").whereEqualTo("userID",user.getUid())
 //                .addSnapshotListener((value, error) -> {
@@ -196,8 +196,8 @@ public class CalendarFragment extends Fragment {
             }
         });
         llData.setOnClickListener(v -> datePickerDialog());
-        llOraStart.setOnClickListener(v -> timePickerDialog(v));
-        llOraSfarsit.setOnClickListener(v -> timePickerDialog(v));
+        llOraStart.setOnClickListener(this::timePickerDialog);
+        llOraSfarsit.setOnClickListener(this::timePickerDialog);
 //        if(date!=null){
 //            tvData.setText(date.toString());
 //        }
@@ -244,8 +244,8 @@ public class CalendarFragment extends Fragment {
 
                 db.collection("reminder").add(reminderToAdd).addOnSuccessListener(documentReference1 -> {
                     Log.d("CalendarFragment", "New reminder added with ID: " + documentReference1.getId());
-                    Reminder newReminder=new Reminder(newEvent.getName(),dateTime);
-                    Reminder.reminders.add(newReminder);
+                    Notification newReminder=new Notification(newEvent.getName(),dateTime);
+                    Notification.reminders.add(newReminder);
 
                     AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
 
@@ -320,9 +320,7 @@ public class CalendarFragment extends Fragment {
         List<Event> dayEvents = getEventsForDate(eventFromPopup.getDate());
 
         if (isStartingHourNotOverlapping(eventFromPopup,dayEvents) && isFinishingHourNotOverlapping(eventFromPopup,dayEvents)){
-            if (!isEventScheduledBetween(eventFromPopup, dayEvents)) {
-                return true;
-            }
+            return !isEventScheduledBetween(eventFromPopup, dayEvents);
         }
         return false;
     }
@@ -348,9 +346,7 @@ public class CalendarFragment extends Fragment {
         }
 
         if (firstEventAfterPopup != null ){
-            if(firstEventAfterPopup.getTimeStart().isBefore(eventFromPopup.getTimeFinal())){
-                return false;
-            }
+            return !firstEventAfterPopup.getTimeStart().isBefore(eventFromPopup.getTimeFinal());
         }
         return true;
     }
@@ -367,9 +363,7 @@ public class CalendarFragment extends Fragment {
         }
 
         if (lastEventBeforePopup != null ){
-            if(lastEventBeforePopup.getTimeFinal().isAfter(eventFromPopup.getTimeStart())){
-                return false;
-            }
+            return !lastEventBeforePopup.getTimeFinal().isAfter(eventFromPopup.getTimeStart());
         }
         return true;
     }
@@ -411,12 +405,6 @@ public class CalendarFragment extends Fragment {
     }
 
     private List<Event> getEventsForDate(LocalDate dataEv) {
-//        List<Event> eventsForDate=new ArrayList<>();
-//        for (Event ev:Event.eventsList) {
-//            if(ev.getDate().equals(dataEv)){
-//                eventsForDate.add(ev);
-//            }
-//        }
         List<Event> eventsForDate=Event.eventsForDate(dataEv);
 
         eventsForDate.sort((event1, event2) -> {
@@ -459,12 +447,7 @@ public class CalendarFragment extends Fragment {
         boolean focusable=true;
         PopupWindow popupWindow=new PopupWindow(popupView,width,height,focusable);
         LinearLayout layout=view.findViewById(R.id.linearLayout);
-        layout.post(new Runnable() {
-            @Override
-            public void run() {
-                popupWindow.showAtLocation(layout, Gravity.CENTER,0,0);
-            }
-        });
+        layout.post(() -> popupWindow.showAtLocation(layout, Gravity.CENTER,0,0));
         return popupWindow;
     }
 
@@ -492,37 +475,31 @@ public class CalendarFragment extends Fragment {
 
         if (!eventsForDate.isEmpty()) {
 
-            // Sort events by start time
             eventsForDate.sort(Comparator.comparing(Event::getTimeStart));
 
             Event firstEvent = eventsForDate.get(0);
 
             long durationBeforeFirstEvent = eventAdapter.calculateDuration(LocalTime.of(0, 0), firstEvent.getTimeStart());
-            blockList.add(eventAdapter.calculateBlockHeight(durationBeforeFirstEvent));
+            blockList.add(RecyclerViewAdapter.calculateBlockHeight(durationBeforeFirstEvent));
 
-            // Add the first event
             blockList.add(firstEvent);
 
-            // Add the blank blocks and events
             for (int i = 1; i < eventsForDate.size(); i++) {
                 Event previousEvent = eventsForDate.get(i - 1);
                 Event currentEvent = eventsForDate.get(i);
 
-                // Calculate the duration between the end time of the previous event and the start time of the current event
                 long duration = eventAdapter.calculateDuration(previousEvent.getTimeFinal(), currentEvent.getTimeStart());
 
-                // Add the blank block
-                blockList.add(eventAdapter.calculateBlockHeight(duration));
+                blockList.add(RecyclerViewAdapter.calculateBlockHeight(duration));
 
-                // Add the current event
                 blockList.add(currentEvent);
             }
             Event lastEvent = eventsForDate.get(eventsForDate.size() - 1);
             long durationAfterLastEvent = eventAdapter.calculateDuration(lastEvent.getTimeFinal(), LocalTime.of(23, 59));
-            blockList.add(eventAdapter.calculateBlockHeight(durationAfterLastEvent));
+            blockList.add(RecyclerViewAdapter.calculateBlockHeight(durationAfterLastEvent));
         }else {
             long duration = eventAdapter.calculateDuration(LocalTime.of(0,0), LocalTime.of(23,59));
-            blockList.add(eventAdapter.calculateBlockHeight(duration));
+            blockList.add(RecyclerViewAdapter.calculateBlockHeight(duration));
         }
 
         return blockList;
@@ -553,7 +530,7 @@ public class CalendarFragment extends Fragment {
                 recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
                 long duration = Duration.between(LocalTime.of(0, 0), LocalTime.of(23, 59)).toMinutes();
-                int totalBlockHeight = eventAdapter.calculateBlockHeight(duration);
+                int totalBlockHeight = RecyclerViewAdapter.calculateBlockHeight(duration);
                 int centralPosition = totalBlockHeight / 2;
                 int recyclerViewHeight = recyclerView.getHeight();
                 int scrollToPosition = centralPosition - recyclerViewHeight / 2;

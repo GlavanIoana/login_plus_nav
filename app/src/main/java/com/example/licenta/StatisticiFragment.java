@@ -1,132 +1,119 @@
 package com.example.licenta;
 
+import static com.example.licenta.CalendarUtils.selectedDate;
+
 import android.graphics.Color;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class StatisticiFragment extends Fragment {
-    private View view;
     private PieChart pieChart;
-    private FirebaseUser user;
-    private FirebaseFirestore db;
-
-    private static final String ARG_PARAM1 = "nrNeinceput";
-    private static final String ARG_PARAM2 = "nrInceput";
-    private static final String ARG_PARAM3 = "nrFinalizat";
-    private int nrNeinceput,nrInceput,nrFinalizat;
-    private ProgressBar progressBar;
-
-
-    public static StatisticiFragment newInstance(int nrNeinceput, int nrInceput, int nrFinalizat) {
-        StatisticiFragment fragment = new StatisticiFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, nrNeinceput);
-        args.putInt(ARG_PARAM2, nrInceput);
-        args.putInt(ARG_PARAM3, nrFinalizat);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            nrNeinceput = getArguments().getInt(ARG_PARAM1);
-            nrInceput = getArguments().getInt(ARG_PARAM2);
-            nrFinalizat = getArguments().getInt(ARG_PARAM3);
-        }
-    }
+    private TextView tvMonthDay;
+    private TextView tvDayOfWeek;
+    private TextView tvNoEvents;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        view= inflater.inflate(R.layout.fragment_statistici, container, false);
+        View view = inflater.inflate(R.layout.fragment_statistici, container, false);
 
-        user= FirebaseAuth.getInstance().getCurrentUser();
-        db=FirebaseFirestore.getInstance();
+        tvMonthDay= view.findViewById(R.id.tvMonthDay);
+        tvDayOfWeek= view.findViewById(R.id.tvDayOfWeek);
+        Button btnNextDay = view.findViewById(R.id.btnNextDay);
+        Button btnPrevDay = view.findViewById(R.id.btnPrevDay);
+        pieChart= view.findViewById(R.id.pieChart);
+        tvNoEvents = view.findViewById(R.id.tvNoEvents);
 
-        pieChart=view.findViewById(R.id.pieChart);
-        ArrayList<PieEntry> entries=new ArrayList<>();
+        CalendarUtils.selectedDate = LocalDate.now();
 
-        db.collection("event").whereEqualTo("userID", user.getUid())
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot doc : task.getResult()) {
-                                switch (doc.getData().get("status").toString()) {
-                                    case "NEINCEPUT":
-                                        nrNeinceput++;
-                                        break;
-                                    case "INCEPUT":
-                                        nrInceput++;
-                                        break;
-                                    case "FINALIZAT":
-                                        nrFinalizat++;
-                                        break;
-                                }
-                            }
-                            Log.d("StatisticiFragment", nrNeinceput + " documents with status "+StatusEv.NEINCEPUT+" found");
-                            Log.d("StatisticiFragment", nrInceput + " documents with status "+StatusEv.INCEPUT+" found");
-                            Log.d("StatisticiFragment", nrFinalizat + " documents with status "+StatusEv.FINALIZAT+" found");
+        btnPrevDay.setOnClickListener(v -> {
+            selectedDate = selectedDate.minusDays(1);
+            updateChart();
+        });
 
-                            entries.add(new PieEntry(nrNeinceput,StatusEv.NEINCEPUT.toString()));
-                            entries.add(new PieEntry(nrInceput,StatusEv.INCEPUT.toString()));
-                            entries.add(new PieEntry(nrFinalizat,StatusEv.FINALIZAT.toString()));
-                            Log.d("StatisticiFragment",entries.toString());
+        btnNextDay.setOnClickListener(v -> {
+            selectedDate = selectedDate.plusDays(1);
+            updateChart();
+        });
 
-                            PieDataSet pieDataSet=new PieDataSet(entries,"Stari sarcini");
-                            Log.d("StatisticiFragment",pieDataSet.toString());
-
-                            pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-                            pieDataSet.setValueTextColor(Color.BLACK);
-                            pieDataSet.setValueTextSize(16f);
-                            pieChart.setData(new PieData(pieDataSet));
-                            pieChart.getDescription().setEnabled(false);
-                            pieChart.setCenterText("Productivitate");
-                            pieChart.animate();
-
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    view.findViewById(R.id.progressBar).setVisibility(View.GONE);
-                                }
-                            }, 2000);
-                            Log.d("StatisticiFragment","Delay finish");
-                        } else {
-                            Log.d("StatisticiFragment", "Error getting documents: ", task.getException());
-                        }
-                    }});
-
-        view.findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
-        Log.d("StatisticiFragment","Return");
+        updateChart();
 
         return view;
+    }
+
+    private void updateChart() {
+        tvMonthDay.setText(CalendarUtils.monthDayFromDate(selectedDate));
+        String dayOfWeek=selectedDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
+        tvDayOfWeek.setText(dayOfWeek);
+//
+//        int nrNeinceput = 0;
+//        int nrInceput = 0;
+//        int nrFinalizat = 0;
+
+        ArrayList<Event> events = Event.eventsForDate(selectedDate);
+
+        if (events.isEmpty()) {
+            tvNoEvents.setVisibility(View.VISIBLE);
+            pieChart.setVisibility(View.INVISIBLE);
+        } else {
+            tvNoEvents.setVisibility(View.GONE);
+            pieChart.setVisibility(View.VISIBLE);}
+
+            int nrNeinceput = 0;
+            int nrInceput = 0;
+            int nrFinalizat = 0;
+
+            for (Event event : events) {
+                switch (event.getStatus()) {
+                    case INCEPUT:
+                        nrInceput++;
+                        break;
+                    case FINALIZAT:
+                        nrFinalizat++;
+                        break;
+                    case NEINCEPUT:
+                        nrNeinceput++;
+                        break;
+                }
+            }
+            Log.d("StatisticiFragment", nrNeinceput + " documents with status "+StatusEv.NEINCEPUT+" found");
+            Log.d("StatisticiFragment", nrInceput + " documents with status "+StatusEv.INCEPUT+" found");
+            Log.d("StatisticiFragment", nrFinalizat + " documents with status "+StatusEv.FINALIZAT+" found");
+
+            ArrayList<PieEntry> entries = new ArrayList<>();
+            entries.add(new PieEntry(nrNeinceput, StatusEv.NEINCEPUT.toString()));
+            entries.add(new PieEntry(nrInceput, StatusEv.INCEPUT.toString()));
+            entries.add(new PieEntry(nrFinalizat, StatusEv.FINALIZAT.toString()));
+        Log.d("StatisticiFragment",entries.toString());
+
+            PieDataSet pieDataSet = new PieDataSet(entries, "Stari sarcini");
+            pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+            pieDataSet.setValueTextColor(Color.BLACK);
+            pieDataSet.setValueTextSize(16f);
+            pieChart.setData(new PieData(pieDataSet));
+            pieChart.getDescription().setEnabled(false);
+            pieChart.setCenterText("Productivitate");
+            pieChart.animate();
+            pieChart.invalidate();
     }
 
 }

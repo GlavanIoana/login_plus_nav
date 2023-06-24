@@ -2,8 +2,8 @@ package com.example.licenta;
 
 import java.util.ArrayList;
 
-public class Reminder {
-    public static ArrayList<Reminder> reminders=new ArrayList<>();
+public class Notification {
+    public static ArrayList<Notification> reminders=new ArrayList<>();
     private String message;
     private long dateTime;
 
@@ -31,7 +31,7 @@ public class Reminder {
         this.dateTime = dateTime;
     }
 
-    public Reminder(String message, long dateTime) {
+    public Notification(String message, long dateTime) {
         this.message = message;
         this.dateTime = dateTime;
     }

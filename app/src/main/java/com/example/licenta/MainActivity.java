@@ -4,9 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +37,10 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-
+    public static final String CHANNEL_1_ID = "channel1";
+    public static final String CHANNEL_2_ID = "channel2";
+    private NotificationManagerCompat notificationManager;
+    private static final String TAG = "MainActivity";
     FirebaseAuth auth;
     FirebaseUser user;
     private DrawerLayout drawerLayout;
@@ -67,14 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(this);
-//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                Toast.makeText(getApplicationContext(), getString(R.string.show_option,item.getTitle()), Toast.LENGTH_SHORT).show();
-//                drawerLayout.closeDrawer(GravityCompat.START);
-//                return true;
-//            }
-//        });
 
         if(savedInstanceState==null){
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new CalendarFragment()).commit();
@@ -106,32 +104,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Event.eventsList.add(citireEvenimentBazaDeDate(documentSnapshot));
                         }
                     }
-                });//        db.collection("event").whereEqualTo("userID", user.getUid())
-//                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    for (QueryDocumentSnapshot doc : task.getResult()) {
-//                        switch (doc.getData().get("status").toString()) {
-//                            case "NEINCEPUT":
-//                                nrNeinceput++;
-//                                break;
-//                            case "INCEPUT":
-//                                nrInceput++;
-//                                break;
-//                            case "FINALIZAT":
-//                                nrFinalizat++;
-//                                break;
-//                        }
-//                    }
-//                    Log.d("MainActivity",StatusEv.NEINCEPUT+" - "+nrNeinceput);
-//                    Log.d("MainActivity",StatusEv.INCEPUT+" - "+ nrInceput);
-//                    Log.d("MainActivity",StatusEv.FINALIZAT+" - "+nrFinalizat);
-//
-//                } else {
-//                    Log.d("MainActivity", "Error getting documents: ", task.getException());
-//                }
-//            }});
+                });
+        notificationManager = NotificationManagerCompat.from(this);
+
+        createNotificationChannels();
     }
 
     private Event citireEvenimentBazaDeDate(QueryDocumentSnapshot document) {
@@ -166,9 +142,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new StatisticiFragment()).commit();
 //                        StatisticiFragment.newInstance(nrNeinceput,nrInceput,nrFinalizat)).commit();
                 break;
-            case R.id.nav_study:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new InvatareFragment()).commit();
-                break;
             case R.id.nav_pomodoro:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,PomodoroFragment.newInstance(Event.eventsList)).commit();
                 break;
@@ -184,6 +157,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void createNotificationChannels() {
+        Log.d("App", "Creating notification channels");
+        NotificationChannel channel1 = new NotificationChannel(
+                CHANNEL_1_ID,
+                "Channel 1",
+                NotificationManager.IMPORTANCE_HIGH
+        );
+        channel1.setDescription("This is Channel 1");
+
+        NotificationChannel channel2 = new NotificationChannel(
+                CHANNEL_2_ID,
+                "Channel 2",
+                NotificationManager.IMPORTANCE_LOW
+        );
+        channel2.setDescription("This is Channel 2");
+
+        NotificationManager manager = getSystemService(NotificationManager.class);
+        manager.createNotificationChannel(channel1);
+        manager.createNotificationChannel(channel2);
     }
 
     @Override

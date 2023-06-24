@@ -59,15 +59,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }
             int culoare;
             switch (event.getCategory()){
-                case MUNCA: culoare=R.color.calblue;break;
+                case INTALNIRE:culoare=R.color.calpurple;break;
                 case SEDINTA:culoare=R.color.caldarkblue;break;
-                case SPORT:culoare=R.color.calorange;break;
+                case MUNCA: culoare=R.color.calblue;break;
+                case TEMA:culoare=R.color.calturqouse;break;
                 case GOSPODARIT:culoare=R.color.calgreen;break;
                 case RELAXARE:culoare=R.color.calyellow;break;
+                case SPORT:culoare=R.color.calorange;break;
                 case PROIECT:culoare=R.color.caldarkorange;break;
-                case INTALNIRE:culoare=R.color.calpurple;break;
                 case DEADLINE:culoare=R.color.calred;break;
-                case TEMA:culoare=R.color.calturqouse;break;
                 default:culoare=R.color.calpink;break;
             };
             holder.llBlock.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),culoare));

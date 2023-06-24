@@ -19,7 +19,7 @@
         android:paddingTop="25dp"
         android:text="@string/adauga_o_sarcina"
         android:textColor="@color/white"
-        android:textSize="30dp"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,8 +36,8 @@
             android:id="@+id/rbProgramFix"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Program fix"
-            android:textSize="16dp"
+            android:text="@string/eveniment_unic"
+            android:textSize="16sp"
             android:textColor="@color/teal_700"
             android:checked="true"
             android:layout_marginStart="16dp"
@@ -46,8 +46,8 @@
             android:id="@+id/rbProgramFlexibil"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Program flexibil"
-            android:textSize="16dp"
+            android:text="@string/obiectiv"
+            android:textSize="16sp"
             android:textColor="@color/teal_700"
             android:layout_marginStart="16dp"/>
 
@@ -60,7 +60,7 @@
         android:backgroundTint="@color/lighterteal"
         android:layout_margin="16dp"
         android:padding="10dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radioGroup"/>
@@ -74,7 +74,7 @@
         android:hint="@string/denumire"
         android:padding="10dp"
         android:layout_margin="16dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spnCategory" />
@@ -95,7 +95,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Acest camp este obligatoriu!"/>
+            android:text="@string/acest_camp_este_obligatoriu"/>
     </LinearLayout>
 
     <LinearLayout
@@ -119,7 +119,7 @@
             android:layout_marginStart="10dp"
             android:layout_weight="3"
             android:text="@string/data"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="0dp"
@@ -145,7 +145,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Acest camp este obligatoriu!"/>
+            android:text="@string/acest_camp_este_obligatoriu"/>
     </LinearLayout>
 
     <LinearLayout
@@ -168,7 +168,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="20dp"
             android:text="@string/ora_start"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -198,7 +198,7 @@
             android:layout_marginEnd="20dp"
             android:layout_weight="3"
             android:text="@string/ora_sfarsit"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -215,7 +215,7 @@
         android:layout_margin="16dp"
         android:padding="8dp"
         android:text="@string/durata"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/llOraStart"
         android:visibility="gone"/>
@@ -228,7 +228,7 @@
         android:backgroundTint="@color/lighterteal"
         android:layout_margin="16dp"
         android:padding="8dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tvDurata"
         app:layout_constraintTop_toBottomOf="@+id/llOraSfarsit"
         app:layout_constraintEnd_toEndOf="parent"
@@ -242,7 +242,7 @@
         android:layout_margin="16dp"
         android:padding="8dp"
         android:text="@string/frecventa"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDurata"
         android:visibility="gone"/>
@@ -255,7 +255,7 @@
         android:backgroundTint="@color/lighterteal"
         android:padding="8dp"
         android:layout_margin="16dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tvFrecventa"
         app:layout_constraintTop_toBottomOf="@+id/spnDurata"
         android:visibility="gone"/>
@@ -266,8 +266,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:padding="8dp"
-        android:text=" ori pe "
-        android:textSize="20dp"
+        android:text="@string/ori_pe"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tietNrFrecventa"
         app:layout_constraintTop_toBottomOf="@+id/spnDurata"
         android:visibility="gone"/>
@@ -280,7 +280,7 @@
         android:backgroundTint="@color/lighterteal"
         android:layout_margin="16dp"
         android:padding="8dp"
-        android:textSize="20dp"
+        android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tvAux"
         app:layout_constraintTop_toBottomOf="@+id/spnDurata"
         app:layout_constraintEnd_toEndOf="parent"

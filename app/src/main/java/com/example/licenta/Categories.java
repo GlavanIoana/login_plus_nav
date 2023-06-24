@@ -1,14 +1,14 @@
 package com.example.licenta;
 
 public enum Categories {
-    SPORT,//portocaliu
+    SEDINTA,//albastru
     MUNCA,//blue
-    RELAXARE,//galben
-    PROIECT,
     TEMA,
     GOSPODARIT,//green
-    INTALNIRE,//mov
-    SEDINTA,//albastru
+    RELAXARE,//galben
+    SPORT,//portocaliu
+    PROIECT,
     DEADLINE,//rosu
+    INTALNIRE,//mov
     ALTELE
 }

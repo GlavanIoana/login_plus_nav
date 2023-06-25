@@ -70,6 +70,7 @@
     <string name="string_default">-</string>
     <string name="editeaza_eveniment">Editeaza eveniment</string>
     <string name="alege_un_eveniment">Alege un eveniment:</string>
+    <string name="alege_intervale">Alege intervale:</string>
     <string name="lu">Lu</string>
     <string name="ma">Ma</string>
     <string name="mi">Mi</string>
@@ -93,25 +94,25 @@
     <string name="calendar">Calendar</string>
     <string name="ioana">Ioana</string>
     <string name="nu_sunt_evenimente_programate_in_aceasta_zi">Nu sunt evenimente programate in aceasta zi!</string>
+    <string name="zi">Zi</string>
+    <string name="saptamana">Saptamana</string>
+    <string name="minute">minute</string>
     <string-array name="unitati_frecventa">
         <item>zi</item>
         <item>saptamana</item>
         <item>luna</item>
     </string-array>
-    <string-array name="durate">
-        <item>15min</item>
-        <item>30min</item>
-        <item>45min</item>
-        <item>1h</item>
-        <item>1h30min</item>
-        <item>2h</item>
-        <item>2h30min</item>
-        <item>3h</item>
-        <item>3h30min</item>
-        <item>4h</item>
-        <item>4h30min</item>
-        <item>5h</item>
-        <item>5h30min</item>
-        <item>6h</item>
+    <string-array name="intervale_preferinta">
+        <item>oricare</item>
+        <item>dimineata</item>
+        <item>pranz</item>
+        <item>dupa-amiaza</item>
+        <item>seara</item>
     </string-array>
+    <string name="interval_date_hours">%1$s : %2$s - %3$s</string>
+    <string name="selecteaza_toate">Selecteaza toate</string>
+    <string name="programeaza">Programeaza</string>
+    <string name="anuleaza">Anuleaza</string>
+    <string name="preferinta_interval">Preferinta interval</string>
+
 </resources>

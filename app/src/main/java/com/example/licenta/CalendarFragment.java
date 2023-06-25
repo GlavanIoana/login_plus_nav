@@ -1,6 +1,10 @@
 package com.example.licenta;
 
 import static com.example.licenta.CalendarUtils.selectedDate;
+import static com.example.licenta.Scheduler.checkForOverlaps;
+import static com.example.licenta.Scheduler.numWeeksToScheduleEventsAhead;
+import static com.example.licenta.Scheduler.scheduleEvent;
+import static com.example.licenta.Scheduler.scheduleEventsForGoal;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -19,10 +23,13 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,17 +57,20 @@ import java.util.Locale;
 import java.util.Map;
 
 public class CalendarFragment extends Fragment {
-
     private TextView tvMonthDay;
     private TextView tvDayOfWeek;
     private RecyclerView recyclerView;
     public static RecyclerViewAdapter eventAdapter;
     private View view;
     private LinearLayout llData,llOraStart,llOraSfarsit,llErrorDenumire,llErrorData;
-    private TextView tvTitlu,tvData,tvOraStart,tvOraSfarsit,tvDurata,tvFrecventa,tvAux;
-    private TextInputEditText tietDenumire,tietNrFrecventa;
-    private Spinner spnCategory,spnDurata,spnFrecventa;
+    private TextView tvTitlu,tvData,tvOraStart,tvOraSfarsit,tvDurata,tvMinute,tvFrecventa,tvAux,tvIntervalPreferinta;
+    private TextInputEditText tietDenumire,tietNrFrecventa,tietDurata;
+    private Spinner spnCategory,spnFrecventa,spnIntervalPreferinta;
     private RadioGroup radioGroup;
+    private RadioButton rbEvenUnic,rbObiectiv;
+    private CheckBox cbAll;
+    private RecyclerView rvAvailableEvents;
+    private Button btnsave,btnSchedule,btnCancel;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
@@ -80,8 +90,6 @@ public class CalendarFragment extends Fragment {
         Button btnNext = view.findViewById(R.id.btnNextDay);
         Button btnPrev = view.findViewById(R.id.btnPrevDay);
         Button btnAddEvent = view.findViewById(R.id.btnAddEvent);
-        LinearLayout layoutOra = view.findViewById(R.id.layoutOra);
-        TextView tvOra = view.findViewById(R.id.tvTime);
 
         CalendarUtils.selectedDate = LocalDate.now();
 //        setDayView();
@@ -99,38 +107,9 @@ public class CalendarFragment extends Fragment {
             createPopupWindow(null,null);
 //                createAddEventDialog();
         });
-//        layoutOra.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                createPopupWindow();
-//            }
-//        });
+
         Log.d("CalendarFragment", "No of reminders: " + Notification.reminders.size());
 
-//        db.collection("event").whereEqualTo("userID",user.getUid())
-//                .addSnapshotListener((value, error) -> {
-//                    if (error!=null){
-//                        Log.w("CalendarFragment","Listen failed.",error);
-//                        return;
-//                    }
-//                    for (QueryDocumentSnapshot document:value){
-//                        String denumire=document.getString("name");
-//                        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//                        String strData=document.getString("day");
-//                        LocalDate data=LocalDate.parse(strData,formatter);
-//                        DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern("HH:mm");
-//                        String strOraSt=document.getString("time start");
-//                        LocalTime oraStart=LocalTime.parse(strOraSt,timeFormatter);
-//                        String strOraSf=document.getString("time final");
-//                        LocalTime oraSfarsit=LocalTime.parse(strOraSf,timeFormatter);
-//                        StatusEv statusEv=StatusEv.valueOf(document.getString("status"));
-//                        Categories category= Categories.valueOf(document.getString("category"));
-//
-//                        Event newEvent=new Event(denumire,data,oraStart,oraSfarsit,statusEv, category);
-//                        Event.eventsList.add(newEvent);
-//                    }
-////                        setDayView();
-//                });
         return view;
     }
 
@@ -169,42 +148,17 @@ public class CalendarFragment extends Fragment {
         initializeViews(popupView);
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rbProgramFix) {
-                tvTitlu.setText(R.string.adauga_o_sarcina);
-                llData.setVisibility(View.VISIBLE);
-                llOraStart.setVisibility(View.VISIBLE);
-                llOraSfarsit.setVisibility(View.VISIBLE);
-
-                tvDurata.setVisibility(View.GONE);
-                spnDurata.setVisibility(View.GONE);
-                tvFrecventa.setVisibility(View.GONE);
-                tietNrFrecventa.setVisibility(View.GONE);
-                tvAux.setVisibility(View.GONE);
-                spnFrecventa.setVisibility(View.GONE);
-            } else if (checkedId == R.id.rbProgramFlexibil) {
-                tvTitlu.setText(R.string.seteaza_un_obiectiv);
-                llData.setVisibility(View.GONE);
-                llOraStart.setVisibility(View.GONE);
-                llOraSfarsit.setVisibility(View.GONE);
-
-                tvDurata.setVisibility(View.VISIBLE);
-                spnDurata.setVisibility(View.VISIBLE);
-                tvFrecventa.setVisibility(View.VISIBLE);
-                tietNrFrecventa.setVisibility(View.VISIBLE);
-                tvAux.setVisibility(View.VISIBLE);
-                spnFrecventa.setVisibility(View.VISIBLE);
+            if (checkedId == R.id.rbEvenUnic) {
+                setPopupViewForEvenUnic();
+            } else if (checkedId == R.id.rbObiectiv) {
+                setPopupViewForObiectiv();
             }
         });
         llData.setOnClickListener(v -> datePickerDialog());
         llOraStart.setOnClickListener(this::timePickerDialog);
         llOraSfarsit.setOnClickListener(this::timePickerDialog);
-//        if(date!=null){
-//            tvData.setText(date.toString());
-//        }
-//        if(timeStart!=null){
-//            tvOraStart.setText(timeStart.toString());
-//        }
-        Button btnsave=popupView.findViewById(R.id.btnSave);
+
+        btnsave=popupView.findViewById(R.id.btnSave);
         btnsave.setOnClickListener(v -> {
             DateTimeFormatter dateFormatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
             DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern("HH:mm");
@@ -212,52 +166,37 @@ public class CalendarFragment extends Fragment {
             if (!checkInputs()) {
                 return;
             }
-            Event newEvent=createEventFromPopupView(dateFormatter,timeFormatter);
-            if (newEvent==null){
-                return;
-            }
-            Event.eventsList.add(newEvent);
 
-            Map<String,Object> eventToAdd=new HashMap<>();
-            createEventToAdd(dateFormatter, timeFormatter, newEvent, eventToAdd);
+            if (rbEvenUnic.isChecked()) {
+                Event newEvent = createEventFromPopupView(dateFormatter, timeFormatter);
+                if (newEvent == null) {
+                    return;
+                }
+                Event.eventsList.add(newEvent);
+
+                Map<String, Object> eventToAdd = new HashMap<>();
+                updateMapWithEventsFields(eventToAdd,newEvent);
 //                final String[] idDoc = new String[1];
 
-            db.collection("event").add(eventToAdd).addOnSuccessListener(documentReference -> {
-                String idDoc = documentReference.getId();
-                Log.d("CalendarFragment", "New document added with ID: " + idDoc);
+                db.collection("event").add(eventToAdd).addOnSuccessListener(documentReference -> {
+                    String idDoc = documentReference.getId();
+                    Log.d("CalendarFragment", "New document added with ID: " + idDoc);
 
-                db.collection("user").document(user.getUid())
-                        .update("events",FieldValue.arrayUnion(idDoc))
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(getActivity(),newEvent.toString(),Toast.LENGTH_SHORT).show();
-                            popupWindow.dismiss();
-                            onResume();
-                        })
-                        .addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event id to the events list", e));
+                    db.collection("user").document(user.getUid())
+                            .update("events", FieldValue.arrayUnion(idDoc))
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(getActivity(), newEvent.toString(), Toast.LENGTH_SHORT).show();
+                                popupWindow.dismiss();
+                                onResume();
+                            })
+                            .addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event id to the events list", e));
 
-                long dateTime=CalendarUtils.toLong(newEvent.getDate(),newEvent.getTimeStart())- (10 * 60 * 1000);
+                    createReminderInDatabase(newEvent, idDoc);
+                }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event", e));
+            }else if (rbObiectiv.isChecked()){
+                createGoalFromPopupView(popupWindow);
 
-                Map<String,Object> reminderToAdd=new HashMap<>();
-                reminderToAdd.put("message",newEvent.getName());
-                reminderToAdd.put("time millis", dateTime);
-                reminderToAdd.put("eventID",idDoc);
-
-                db.collection("reminder").add(reminderToAdd).addOnSuccessListener(documentReference1 -> {
-                    Log.d("CalendarFragment", "New reminder added with ID: " + documentReference1.getId());
-                    Notification newReminder=new Notification(newEvent.getName(),dateTime);
-                    Notification.reminders.add(newReminder);
-
-                    AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
-
-                    Intent intent = new Intent(getContext(), NotificationReceiver.class);
-                    intent.putExtra("message", newReminder.getMessage());
-                    intent.putExtra("time", newReminder.getDateTime());
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, newReminder.getDateTime(), pendingIntent);
-                }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding reminder", e));
-            }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event", e));
-
+            }
         });
         popupView.setOnTouchListener((v, event) -> {
             popupWindow.dismiss();
@@ -267,13 +206,231 @@ public class CalendarFragment extends Fragment {
 
     }
 
+    private void setPopupViewForObiectiv() {
+        tvTitlu.setText(R.string.seteaza_un_obiectiv);
+        radioGroup.setVisibility(View.VISIBLE);
+        spnCategory.setVisibility(View.VISIBLE);
+        tietDenumire.setVisibility(View.VISIBLE);
+        llData.setVisibility(View.GONE);
+        llOraStart.setVisibility(View.GONE);
+        llOraSfarsit.setVisibility(View.GONE);
+
+        tvDurata.setVisibility(View.VISIBLE);
+        tietDurata.setVisibility(View.VISIBLE);
+        tvMinute.setVisibility(View.VISIBLE);
+        tvFrecventa.setVisibility(View.VISIBLE);
+        tietNrFrecventa.setVisibility(View.VISIBLE);
+        tvAux.setVisibility(View.VISIBLE);
+        spnFrecventa.setVisibility(View.VISIBLE);
+        tvIntervalPreferinta.setVisibility(View.VISIBLE);
+        spnIntervalPreferinta.setVisibility(View.VISIBLE);
+
+        btnsave.setVisibility(View.VISIBLE);
+
+        cbAll.setVisibility(View.GONE);
+        rvAvailableEvents.setVisibility(View.GONE);
+        btnSchedule.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+    }
+
+    private void setPopupViewForEvenUnic() {
+        tvTitlu.setText(R.string.adauga_o_sarcina);
+        radioGroup.setVisibility(View.VISIBLE);
+        spnCategory.setVisibility(View.VISIBLE);
+        tietDenumire.setVisibility(View.VISIBLE);
+        llData.setVisibility(View.VISIBLE);
+        llOraStart.setVisibility(View.VISIBLE);
+        llOraSfarsit.setVisibility(View.VISIBLE);
+
+        tvDurata.setVisibility(View.GONE);
+        tietDurata.setVisibility(View.GONE);
+        tvMinute.setVisibility(View.GONE);
+        tvFrecventa.setVisibility(View.GONE);
+        tietNrFrecventa.setVisibility(View.GONE);
+        tvAux.setVisibility(View.GONE);
+        spnFrecventa.setVisibility(View.GONE);
+        tvIntervalPreferinta.setVisibility(View.GONE);
+        spnIntervalPreferinta.setVisibility(View.GONE);
+
+        btnsave.setVisibility(View.VISIBLE);
+
+        cbAll.setVisibility(View.GONE);
+        rvAvailableEvents.setVisibility(View.GONE);
+        btnSchedule.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+    }
+
+    private void createGoalFromPopupView(PopupWindow popupWindow) {
+        Categories category=(Categories) spnCategory.getSelectedItem();
+        String name = tietDenumire.getText().toString();
+        long duration= Integer.parseInt(tietDurata.getText().toString());
+        int frequency= Integer.parseInt(tietNrFrecventa.getText().toString());
+        String typeFrequency= (String) spnFrecventa.getSelectedItem();
+        String intervalPref= (String) spnIntervalPreferinta.getSelectedItem();
+        Goal goal=new Goal(name,category,duration,frequency,typeFrequency,intervalPref);
+
+        LocalTime intervalStart = LocalTime.of(6, 0);
+        LocalTime intervalEnd= LocalTime.of(23, 59);
+        String[] intervalLabels = getResources().getStringArray(R.array.intervale_preferinta);
+
+        if (intervalPref.equals(intervalLabels[1])) {
+            intervalStart = LocalTime.of(6, 0); // Start of the morning
+            intervalEnd = LocalTime.of(10, 0); // End of the morning
+        } else if (intervalPref.equals(intervalLabels[2])) {
+            intervalStart = LocalTime.of(10, 0); // Start of the afternoon
+            intervalEnd = LocalTime.of(14, 0); // End of the afternoon
+        } else if (intervalPref.equals(intervalLabels[3])) {
+            intervalStart = LocalTime.of(14, 0); // Start of the evening
+            intervalEnd = LocalTime.of(18, 0); // End of the evening
+        } else if (intervalPref.equals(intervalLabels[4])) {
+            intervalStart = LocalTime.of(18, 0); // Start of the night
+            intervalEnd = LocalTime.of(23, 59); // End of the night
+        }
+        List<Event> eventsFound = scheduleEventsForGoal(getContext(),goal,intervalStart,intervalEnd);
+
+        // Handle the scheduled events (e.g., display them to the user, save to database, etc.)
+        handleScheduledEvents(popupWindow,goal,eventsFound);
+    }
+
+    private void handleScheduledEvents(PopupWindow popupWindow, Goal goal, List<Event> scheduledEvents) {
+        if (scheduledEvents.size() < numWeeksToScheduleEventsAhead * goal.getFrequency()) {
+            Toast.makeText(getContext(), "NU S-AU GASIT ATATEA INTERVALE" , Toast.LENGTH_SHORT).show();
+            // Inform the user and offer the option to schedule available intervals
+        }
+
+        setPopupViewForShowingAvailableEvents();
+        AvailableEventAdapter availableEventAdapter = new AvailableEventAdapter(scheduledEvents);
+        rvAvailableEvents.setAdapter(availableEventAdapter);
+        rvAvailableEvents.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        //TODO: sincronizare cbAll cu checkboxuri
+
+        btnSchedule.setOnClickListener(v -> {
+            Goal.goalsList.add(goal);
+            List<Event> selectedEvents = availableEventAdapter.getSelectedEvents();
+            for (Event event : selectedEvents) {
+                goal.addEvent(event);
+            }
+            addGoalToDatabase(popupWindow,goal);
+            Toast.makeText(getContext(), selectedEvents.size()+" Selected events added to the goal", Toast.LENGTH_SHORT).show();
+        });
+        btnCancel.setOnClickListener(v -> {
+            setPopupViewForObiectiv();
+            Categories goalCategory = goal.getCategory();
+            int categoryIndex = getCategoryIndex(goalCategory);
+            spnCategory.setSelection(categoryIndex);
+            tietDenumire.setText(goal.getName());
+            tietDurata.setText(String.valueOf(goal.getDuration()));
+            tietNrFrecventa.setText(String.valueOf(goal.getFrequency()));
+            spnFrecventa.setSelection(getTypeFrequencyIndex(goal.getTypeFrequency()));
+        });
+    }
+    private int getTypeFrequencyIndex(String typeFrequency) {
+        SpinnerAdapter adapter = spnFrecventa.getAdapter();
+        int count = adapter.getCount();
+        for (int i = 0; i < count; i++) {
+            Object item = adapter.getItem(i);
+            if (item != null && item.toString().equals(typeFrequency)) {
+                return i;
+            }
+        }
+        return 0; // If the typeFrequency is not found in the adapter
+    }
+
+    private int getCategoryIndex(Categories category) {
+        SpinnerAdapter adapter = spnCategory.getAdapter();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i) == category) {
+                return i;
+            }
+        }
+        return 0; // Default to the first item if category is not found
+    }
+
+    private void addGoalToDatabase(PopupWindow popupWindow, Goal newGoal) {
+        Map<String, Object> goalToAdd = new HashMap<>();
+        updateMapWithGoalFields(goalToAdd,newGoal);
+        // Add the new goal to the database
+        db.collection("goal").add(goalToAdd)
+                .addOnSuccessListener(documentReference -> {
+                    String goalId = documentReference.getId();
+                    Log.d("CalendarFragment", "New goal added with ID: " + goalId);
+
+                    // Create a list of event IDs for the goal's events
+                    List<String> eventIds = new ArrayList<>();
+                    for (Event event : newGoal.getEvents()) {
+                        Map<String, Object> eventToAdd = new HashMap<>();
+                        updateMapWithEventsFields(eventToAdd,event);
+
+                        db.collection("event").add(eventToAdd)
+                                .addOnSuccessListener(eventDocumentReference -> {
+                                    String eventId = eventDocumentReference.getId();
+                                    Log.d("CalendarFragment", "New event added with ID: " + eventId);
+                                    eventIds.add(eventId);
+                                    Event.eventsList.add(event);
+
+                                    // Update the goal document with the event IDs
+                                    db.collection("goal").document(goalId)
+                                            .update("eventIds", FieldValue.arrayUnion(eventIds.toArray()))
+                                            .addOnSuccessListener(unused -> {
+//                                                Toast.makeText(getActivity(), newGoal.toString(), Toast.LENGTH_SHORT).show();
+                                                if (popupWindow != null && popupWindow.isShowing()) {
+                                                    popupWindow.dismiss();
+                                                }
+                                                onResume();
+                                            })
+                                            .addOnFailureListener(e -> Log.d("CalendarFragment", "Error updating goal document with event IDs", e));
+                                }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event", e));
+                    }
+                }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding goal", e));
+    }
+
+    private void updateMapWithGoalFields(Map<String, Object> goalToAdd, Goal newGoal) {
+        goalToAdd.put("name", newGoal.getName());
+        goalToAdd.put("category", newGoal.getCategory().name());
+        goalToAdd.put("duration", newGoal.getDuration());
+        goalToAdd.put("frequency", newGoal.getFrequency());
+        goalToAdd.put("type frequency", newGoal.getTypeFrequency());
+        goalToAdd.put("userID",user.getUid());
+    }
+
+    private void setPopupViewForShowingAvailableEvents() {
+        tvTitlu.setText(R.string.alege_intervale);
+        radioGroup.setVisibility(View.GONE);
+        spnCategory.setVisibility(View.GONE);
+        tietDenumire.setVisibility(View.GONE);
+
+        llData.setVisibility(View.GONE);
+        llOraStart.setVisibility(View.GONE);
+        llOraSfarsit.setVisibility(View.GONE);
+
+        tvDurata.setVisibility(View.GONE);
+        tietDurata.setVisibility(View.GONE);
+        tvMinute.setVisibility(View.GONE);
+        tvFrecventa.setVisibility(View.GONE);
+        tietNrFrecventa.setVisibility(View.GONE);
+        tvAux.setVisibility(View.GONE);
+        spnFrecventa.setVisibility(View.GONE);
+        tvIntervalPreferinta.setVisibility(View.GONE);
+        spnIntervalPreferinta.setVisibility(View.GONE);
+
+        btnsave.setVisibility(View.GONE);
+
+        cbAll.setVisibility(View.VISIBLE);
+        rvAvailableEvents.setVisibility(View.VISIBLE);
+        btnSchedule.setVisibility(View.VISIBLE);
+        btnCancel.setVisibility(View.VISIBLE);
+    }
+
     private boolean checkInputs() {
         boolean isValid=true;
         llErrorDenumire.setVisibility(View.GONE);
         llErrorData.setVisibility(View.GONE);
-        if(tvData.getText()==getString(R.string.data)){
-            llErrorData.setVisibility(View.VISIBLE);
-            isValid= false;
+        if (rbEvenUnic.isChecked()) {
+            if(tvData.getText()==getString(R.string.data)){
+                llErrorData.setVisibility(View.VISIBLE);
+                isValid= false;
+            }
         }
         if (TextUtils.isEmpty(tietDenumire.getText())){
             llErrorDenumire.setVisibility(View.VISIBLE);
@@ -282,11 +439,11 @@ public class CalendarFragment extends Fragment {
         return isValid;
     }
 
-    private void createEventToAdd(DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter, Event newEvent, Map<String, Object> eventToAdd) {
+    private void updateMapWithEventsFields(Map<String, Object> eventToAdd,Event newEvent) {
         eventToAdd.put("name", newEvent.getName());
-        eventToAdd.put("day", newEvent.getDate().format(dateFormatter));
-        eventToAdd.put("time start", newEvent.getTimeStart().format(timeFormatter));
-        eventToAdd.put("time final", newEvent.getTimeFinal().format(timeFormatter));
+        eventToAdd.put("day", CalendarUtils.formattedDate(newEvent.getDate()));
+        eventToAdd.put("time start", CalendarUtils.formattedShortTime(newEvent.getTimeStart()));
+        eventToAdd.put("time final", CalendarUtils.formattedShortTime(newEvent.getTimeFinal()));
         eventToAdd.put("status",StatusEv.NEINCEPUT);
         eventToAdd.put("category", newEvent.getCategory().name());
         eventToAdd.put("userID",user.getUid());
@@ -312,112 +469,15 @@ public class CalendarFragment extends Fragment {
                 return null;
             }
         }else {
-            return scheduleEvent(eventName,dataEv,strCategory);
+            return scheduleEvent(getContext(),eventName,dataEv,strCategory,60,LocalTime.of(6,0),LocalTime.of(23,59));
         }
-    }
-
-    private boolean checkForOverlaps(Event eventFromPopup) {
-        List<Event> dayEvents = getEventsForDate(eventFromPopup.getDate());
-
-        if (isStartingHourNotOverlapping(eventFromPopup,dayEvents) && isFinishingHourNotOverlapping(eventFromPopup,dayEvents)){
-            return !isEventScheduledBetween(eventFromPopup, dayEvents);
-        }
-        return false;
-    }
-
-    private boolean isEventScheduledBetween(Event eventFromPopup, List<Event> dayEvents) {
-        for (Event event : dayEvents) {
-            if (event.getTimeStart().isAfter(eventFromPopup.getTimeStart()) &&
-                    event.getTimeFinal().isBefore(eventFromPopup.getTimeFinal())) {
-                return true; // Event scheduled between the starting and finishing hours of eventFromPopup
-            }
-        }
-        return false; // No event scheduled between the starting and finishing hours of eventFromPopup
-    }
-
-    private boolean isFinishingHourNotOverlapping(Event eventFromPopup, List<Event> dayEvents) {
-        Event firstEventAfterPopup = null;
-
-        for (Event event : dayEvents) {
-            if (event.getTimeStart().isAfter(eventFromPopup.getTimeStart())) {
-                firstEventAfterPopup = event;
-                break;
-            }
-        }
-
-        if (firstEventAfterPopup != null ){
-            return !firstEventAfterPopup.getTimeStart().isBefore(eventFromPopup.getTimeFinal());
-        }
-        return true;
-    }
-
-    private boolean isStartingHourNotOverlapping(Event eventFromPopup, List<Event> dayEvents) {
-        Event lastEventBeforePopup = null;
-
-        for (Event event : dayEvents) {
-            if (event.getTimeStart().isBefore(eventFromPopup.getTimeStart())) {
-                lastEventBeforePopup = event;
-            } else {
-                break;
-            }
-        }
-
-        if (lastEventBeforePopup != null ){
-            return !lastEventBeforePopup.getTimeFinal().isAfter(eventFromPopup.getTimeStart());
-        }
-        return true;
-    }
-
-    private Event scheduleEvent(String eventName, LocalDate dataEv, Categories strCategory) {
-        LocalTime startTime = LocalTime.of(8, 0); // Starting time: 8am
-
-        List<Event> eventsForDate = getEventsForDate(dataEv);
-        // Check if there is at least one hour available before the first event
-        if (eventsForDate.isEmpty() || startTime.plusHours(1).isBefore(eventsForDate.get(0).getTimeStart())) {
-            // Schedule the event using the specified start and end times
-            return new Event(eventName, dataEv, startTime, startTime.plusHours(1), StatusEv.NEINCEPUT, strCategory);
-        }
-
-        // Iterate over the events to find a free hour between the events
-        for (int i = 0; i < eventsForDate.size() - 1; i++) {
-            Event currentEvent = eventsForDate.get(i);
-            Event nextEvent = eventsForDate.get(i + 1);
-
-            LocalTime currentEventEndTime = currentEvent.getTimeFinal();
-            LocalTime nextEventStartTime = nextEvent.getTimeStart();
-
-            // Check if there is at least one hour available between the current event's end time and the next event's start time
-            if (currentEventEndTime.plusHours(1).isBefore(nextEventStartTime)) {
-                // One hour is available, schedule the event
-                return new Event(eventName, dataEv, currentEventEndTime, currentEventEndTime.plusHours(1), StatusEv.NEINCEPUT, strCategory);
-            }
-        }
-        // Check if there is at least one hour available after the last event
-        Event lastEvent = eventsForDate.get(eventsForDate.size() - 1);
-        LocalTime lastEventEndTime = lastEvent.getTimeFinal();
-        if (lastEventEndTime.isBefore(LocalTime.of(23, 1))) {
-            // Schedule the event using the specified start and end times
-            return new Event(eventName, dataEv, lastEventEndTime, lastEventEndTime.plusHours(1), StatusEv.NEINCEPUT, strCategory);
-        }
-        System.out.println("Ziua este plina! Nu se poate programa pe data de " + dataEv);
-        Toast.makeText(getContext(), "Ziua este plina! Nu se poate programa pe data de " + dataEv, Toast.LENGTH_SHORT).show();
-        return null;
-    }
-
-    private List<Event> getEventsForDate(LocalDate dataEv) {
-        List<Event> eventsForDate=Event.eventsForDate(dataEv);
-
-        eventsForDate.sort((event1, event2) -> {
-            LocalTime startTime1 = event1.getTimeStart();
-            LocalTime startTime2 = event2.getTimeStart();
-            return startTime1.compareTo(startTime2);
-        });
-        return eventsForDate;
     }
 
     private void initializeViews(View popupView) {
         tvTitlu=popupView.findViewById(R.id.textView);
         radioGroup=popupView.findViewById(R.id.radioGroup);
+        rbEvenUnic=popupView.findViewById(R.id.rbEvenUnic);
+        rbObiectiv=popupView.findViewById(R.id.rbObiectiv);
         spnCategory =popupView.findViewById(R.id.spnCategory);
         spnCategory.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, Categories.values()));
 
@@ -431,13 +491,45 @@ public class CalendarFragment extends Fragment {
         tvOraSfarsit=popupView.findViewById(R.id.tvOraSfarsit);
 
         tvDurata=popupView.findViewById(R.id.tvDurata);
-        spnDurata=popupView.findViewById(R.id.spnDurata);
+        tietDurata=popupView.findViewById(R.id.tietDurata);
+        tvMinute = popupView.findViewById(R.id.tvMinute);
         tvFrecventa=popupView.findViewById(R.id.tvFrecventa);
         tietNrFrecventa=popupView.findViewById(R.id.tietNrFrecventa);
         tvAux=popupView.findViewById(R.id.tvAux);
         spnFrecventa=popupView.findViewById(R.id.spnUnitateFrecventa);
+        tvIntervalPreferinta=popupView.findViewById(R.id.tvIntervalPreferinta);
+        spnIntervalPreferinta=popupView.findViewById(R.id.spnIntervalPreferinta);
         llErrorDenumire=popupView.findViewById(R.id.llErrorDenumire);
         llErrorData=popupView.findViewById(R.id.llErrorData);
+
+        cbAll=popupView.findViewById(R.id.cbAll);
+        rvAvailableEvents=popupView.findViewById(R.id.rvAvailableEvents);
+        btnSchedule=popupView.findViewById(R.id.btnSchedule);
+        btnCancel=popupView.findViewById(R.id.btnCancel);
+    }
+
+    private void createReminderInDatabase(Event newEvent, String idDoc) {
+        long dateTime = CalendarUtils.toLong(newEvent.getDate(), newEvent.getTimeStart()) - (10 * 60 * 1000);
+
+        Map<String, Object> reminderToAdd = new HashMap<>();
+        reminderToAdd.put("message", newEvent.getName());
+        reminderToAdd.put("time millis", dateTime);
+        reminderToAdd.put("eventID", idDoc);
+
+        db.collection("reminder").add(reminderToAdd).addOnSuccessListener(documentReference1 -> {
+            Log.d("CalendarFragment", "New reminder added with ID: " + documentReference1.getId());
+            Notification newReminder = new Notification(newEvent.getName(), dateTime);
+            Notification.reminders.add(newReminder);
+
+            AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+
+            Intent intent = new Intent(getContext(), NotificationReceiver.class);
+            intent.putExtra("message", newReminder.getMessage());
+            intent.putExtra("time", newReminder.getDateTime());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, newReminder.getDateTime(), pendingIntent);
+        }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding reminder", e));
     }
 
     @NonNull

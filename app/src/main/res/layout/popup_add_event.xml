@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="10dp"
@@ -33,7 +32,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView">
         <RadioButton
-            android:id="@+id/rbProgramFix"
+            android:id="@+id/rbEvenUnic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/eveniment_unic"
@@ -43,7 +42,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"/>
         <RadioButton
-            android:id="@+id/rbProgramFlexibil"
+            android:id="@+id/rbObiectiv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/obiectiv"
@@ -220,9 +219,9 @@
         app:layout_constraintTop_toBottomOf="@+id/llOraStart"
         android:visibility="gone"/>
 
-    <Spinner
-        android:id="@+id/spnDurata"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/tietDurata"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:background="@drawable/popup_shape"
         android:backgroundTint="@color/lighterteal"
@@ -231,8 +230,20 @@
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tvDurata"
         app:layout_constraintTop_toBottomOf="@+id/llOraSfarsit"
+        app:layout_constraintEnd_toStartOf="@id/tvMinute"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvMinute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:text="@string/minute"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/tietDurata"
+        app:layout_constraintTop_toBottomOf="@+id/llOraSfarsit"
         app:layout_constraintEnd_toEndOf="parent"
-        android:entries="@array/durate"
         android:visibility="gone"/>
 
     <TextView
@@ -257,7 +268,7 @@
         android:layout_margin="16dp"
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tvFrecventa"
-        app:layout_constraintTop_toBottomOf="@+id/spnDurata"
+        app:layout_constraintTop_toBottomOf="@+id/tietDurata"
         android:visibility="gone"/>
 
     <TextView
@@ -269,7 +280,7 @@
         android:text="@string/ori_pe"
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tietNrFrecventa"
-        app:layout_constraintTop_toBottomOf="@+id/spnDurata"
+        app:layout_constraintTop_toBottomOf="@+id/tietDurata"
         android:visibility="gone"/>
 
     <Spinner
@@ -282,11 +293,99 @@
         android:padding="8dp"
         android:textSize="20sp"
         app:layout_constraintStart_toEndOf="@+id/tvAux"
-        app:layout_constraintTop_toBottomOf="@+id/spnDurata"
+        app:layout_constraintTop_toBottomOf="@+id/tietDurata"
         app:layout_constraintEnd_toEndOf="parent"
         android:entries="@array/unitati_frecventa"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/tvIntervalPreferinta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:text="@string/preferinta_interval"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tietNrFrecventa"
+        android:visibility="gone"/>
+
+    <Spinner
+        android:id="@+id/spnIntervalPreferinta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_shape"
+        android:backgroundTint="@color/lighterteal"
+        android:layout_margin="16dp"
+        android:padding="8dp"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@+id/tvIntervalPreferinta"
+        app:layout_constraintTop_toBottomOf="@+id/tietNrFrecventa"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:entries="@array/intervale_preferinta"
+        android:visibility="gone"/>
+
+    <CheckBox
+        android:id="@+id/cbAll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/selecteaza_toate"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:checked="true"
+        android:visibility="gone"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvAvailableEvents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/cbAll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnSchedule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_shape"
+        android:backgroundTint="@color/lighterteal"
+        android:text="@string/programeaza"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_margin="20dp"
+        android:padding="8dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnCancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvAvailableEvents"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_shape"
+        android:backgroundTint="@color/lighterteal"
+        android:text="@string/anuleaza"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_margin="20dp"
+        android:padding="8dp"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnSchedule"
+        app:layout_constraintTop_toBottomOf="@+id/rvAvailableEvents"
+        android:visibility="gone"/>
 
     <Button
         android:id="@+id/btnSave"
@@ -305,7 +404,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tietNrFrecventa" />
+        app:layout_constraintTop_toBottomOf="@+id/spnIntervalPreferinta" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

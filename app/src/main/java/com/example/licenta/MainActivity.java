@@ -7,6 +7,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+//import androidx.work.Constraints;
+//import androidx.work.ExistingPeriodicWorkPolicy;
+//import androidx.work.NetworkType;
+//import androidx.work.PeriodicWorkRequest;
+//import androidx.work.WorkManager;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -35,16 +40,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public static final String CHANNEL_1_ID = "channel1";
     public static final String CHANNEL_2_ID = "channel2";
-    private NotificationManagerCompat notificationManager;
-    private static final String TAG = "MainActivity";
+//    private NotificationManagerCompat notificationManager;
+//    private static final String TAG = "MainActivity";
     FirebaseAuth auth;
     FirebaseUser user;
     private DrawerLayout drawerLayout;
     private FirebaseFirestore db;
+//    private static final String WORK_TAG = "notification_work";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,31 +91,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Map<String, Object> userobj = new HashMap<>();
         userobj.put("email", user.getEmail());
         db.collection("user").document(user.getUid()).set(userobj)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Log.d("MainActivity", "DocumentSnapshot successfully written!");
-            }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w("MainActivity", "Error writing document", e);
-                    }
-                });
+                .addOnSuccessListener(unused -> Log.d("MainActivity", "DocumentSnapshot successfully written!"))
+                .addOnFailureListener(e -> Log.w("MainActivity", "Error writing document", e));
 
         db.collection("event").whereEqualTo("userID",user.getUid()).orderBy("day").orderBy("time start").get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
-                            Event.eventsList.add(citireEvenimentBazaDeDate(documentSnapshot));
-                        }
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                        Event.eventsList.add(citireEvenimentBazaDeDate(documentSnapshot));
                     }
                 });
-        notificationManager = NotificationManagerCompat.from(this);
+//        notificationManager = NotificationManagerCompat.from(this);
+//
+//        createNotificationChannels();
 
-        createNotificationChannels();
+//
+//        // Create periodic work request
+//        Constraints constraints = new Constraints.Builder()
+//                .setRequiredNetworkType(NetworkType.CONNECTED)
+//                .build();
+//
+//        PeriodicWorkRequest notificationWorkRequest =
+//                new PeriodicWorkRequest.Builder(NotificationWorker.class, 5, TimeUnit.MINUTES)
+//                        .setConstraints(constraints)
+//                        .build();
+//
+//        // Enqueue the work request
+//        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+//                WORK_TAG,
+//                ExistingPeriodicWorkPolicy.KEEP,
+//                notificationWorkRequest
+//        );
     }
 
     private Event citireEvenimentBazaDeDate(QueryDocumentSnapshot document) {
@@ -122,8 +135,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LocalTime oraSfarsit=LocalTime.parse(strOraSf,timeFormatter);
         StatusEv statusEv=StatusEv.valueOf(document.getString("status"));
         Categories category= Categories.valueOf(document.getString("category"));
-        Event event=new Event(denumire,data,oraStart,oraSfarsit,statusEv,category==null?Categories.ALTELE:category);
-        return event;
+        return new Event(denumire,data,oraStart,oraSfarsit,statusEv, category);
     }
 
     @Override

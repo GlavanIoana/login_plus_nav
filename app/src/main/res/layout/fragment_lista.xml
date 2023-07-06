@@ -7,4 +7,20 @@
     android:orientation="vertical"
     android:id="@+id/layoutLista">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvEventList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabChangeStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_baseline_mode_edit_outline_24"
+        android:contentDescription="@string/change_status"
+        android:visibility="gone"
+        />
 </LinearLayout>

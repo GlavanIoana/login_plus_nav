@@ -57,19 +57,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 holder.endTimeTextView.setVisibility(View.GONE);
                 holder.titleTextView.setTextAppearance(android.R.style.TextAppearance_Small);
             }
-            int culoare;
-            switch (event.getCategory()){
-                case INTALNIRE:culoare=R.color.calpurple;break;
-                case SEDINTA:culoare=R.color.caldarkblue;break;
-                case MUNCA: culoare=R.color.calblue;break;
-                case TEMA:culoare=R.color.calturqouse;break;
-                case GOSPODARIT:culoare=R.color.calgreen;break;
-                case RELAXARE:culoare=R.color.calyellow;break;
-                case SPORT:culoare=R.color.calorange;break;
-                case PROIECT:culoare=R.color.caldarkorange;break;
-                case DEADLINE:culoare=R.color.calred;break;
-                default:culoare=R.color.calpink;break;
-            };
+            int culoare = getCuloare(event);
             holder.llBlock.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),culoare));
             long duration = calculateDuration(event.getTimeStart(), event.getTimeFinal());
             ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
@@ -104,6 +92,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             layoutParams.height = blankBlockHeight;
             holder.itemView.setLayoutParams(layoutParams);
         }
+    }
+
+    protected static int getCuloare(Event event) {
+        int culoare;
+        switch (event.getCategory()){
+            case INTALNIRE:culoare=R.color.calpurple;break;
+            case SEDINTA:culoare=R.color.caldarkblue;break;
+            case MUNCA: culoare=R.color.calblue;break;
+            case TEMA:culoare=R.color.calturqouse;break;
+            case GOSPODARIT:culoare=R.color.calgreen;break;
+            case RELAXARE:culoare=R.color.calyellow;break;
+            case SPORT:culoare=R.color.calorange;break;
+            case PROIECT:culoare=R.color.caldarkorange;break;
+            case DEADLINE:culoare=R.color.calred;break;
+            default:culoare=R.color.calpink;break;
+        }
+
+        return culoare;
     }
 
     public static int calculateBlockHeight(long duration) {

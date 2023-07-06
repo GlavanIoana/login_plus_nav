@@ -37,14 +37,16 @@ public class Scheduler {
         Event firstEventAfterPopup = null;
 
         for (Event event : dayEvents) {
-            if (event.getTimeStart().isAfter(eventFromPopup.getTimeStart())) {
+            if (event.getTimeStart()
+                    .isAfter(eventFromPopup.getTimeStart())) {
                 firstEventAfterPopup = event;
                 break;
             }
         }
 
         if (firstEventAfterPopup != null ){
-            return !firstEventAfterPopup.getTimeStart().isBefore(eventFromPopup.getTimeFinal());
+            return !firstEventAfterPopup.getTimeStart()
+                    .isBefore(eventFromPopup.getTimeFinal());
         }
         return true;
     }
@@ -53,7 +55,8 @@ public class Scheduler {
         Event lastEventBeforePopup = null;
 
         for (Event event : dayEvents) {
-            if (event.getTimeStart().isBefore(eventFromPopup.getTimeStart())) {
+            if (event.getTimeStart()
+                    .isBefore(eventFromPopup.getTimeStart())) {
                 lastEventBeforePopup = event;
             } else {
                 break;
@@ -61,12 +64,13 @@ public class Scheduler {
         }
 
         if (lastEventBeforePopup != null ){
-            return !lastEventBeforePopup.getTimeFinal().isAfter(eventFromPopup.getTimeStart());
+            return !lastEventBeforePopup.getTimeFinal()
+                    .isAfter(eventFromPopup.getTimeStart());
         }
         return true;
     }
 
-    public static Event scheduleEvent(Context context, String eventName, LocalDate dataEv, Categories strCategory,long duration,LocalTime intervalStart, LocalTime intervalEnd) {
+    public static Event scheduleEvent(String eventName, LocalDate dataEv, Categories strCategory,long duration,LocalTime intervalStart, LocalTime intervalEnd) {
 //        LocalTime startTime = LocalTime.of(8, 0); // Starting time: 8am
 
         List<Event> eventsForDate = getEventsForDate(dataEv);
@@ -139,10 +143,8 @@ public class Scheduler {
         List<Event> availableIntervals = new ArrayList<>();
 
         for (int i = 0; i < numWeeksToScheduleEventsAhead; i++) {
-            List<Event> weekIntervals = findAvailableIntervals(context,startTime, endTime, goal,intervalStart,intervalEnd);
+            List<Event> weekIntervals = findAvailableIntervals(startTime, endTime, goal,intervalStart,intervalEnd);
             availableIntervals.addAll(weekIntervals);
-
-            // Move to the next week
             startTime = startTime.plusWeeks(1);
             endTime = endTime.plusWeeks(1);
         }
@@ -150,21 +152,21 @@ public class Scheduler {
         return availableIntervals;
     }
 
-    private static List<Event> findAvailableIntervals(Context context, LocalDateTime startTime, LocalDateTime endTime, Goal goal,LocalTime intervalStart,LocalTime intervalEnd) {
+    private static List<Event> findAvailableIntervals(LocalDateTime startTime, LocalDateTime endTime, Goal goal,LocalTime intervalStart,LocalTime intervalEnd) {
         List<Event> availableIntervals = new ArrayList<>();
         int numOfIntervals = 0;
 
         while (startTime.isBefore(endTime) && numOfIntervals < goal.getFrequency()) {
             LocalDate currentDate = startTime.toLocalDate();
 
-            Event event = scheduleEvent(context, goal.getName(), currentDate, goal.getCategory(), goal.getDuration(),intervalStart,intervalEnd);
+            Event event = scheduleEvent(goal.getName(), currentDate, goal.getCategory(), goal.getDuration(),intervalStart,intervalEnd);
 
             if (event != null) {
                 availableIntervals.add(event);
                 numOfIntervals++;
             }
 
-            startTime = startTime.plusDays(1); // Increment the search interval (hourly in this example)
+            startTime = startTime.plusDays(1);
         }
 
         return availableIntervals;

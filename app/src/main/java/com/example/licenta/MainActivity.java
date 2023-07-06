@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 //import androidx.work.Constraints;
@@ -24,23 +23,17 @@ import android.widget.TextView;
 
 import com.example.licenta.Eisenhower.EisenhowerFragment;
 import com.example.licenta.Pomodoro.PomodoroFragment;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     public static final String CHANNEL_1_ID = "channel1";
@@ -50,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FirebaseAuth auth;
     FirebaseUser user;
     private DrawerLayout drawerLayout;
-    private FirebaseFirestore db;
 //    private static final String WORK_TAG = "notification_work";
 
 
@@ -87,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.nav_calendar);
         }
 
-        db=FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> userobj = new HashMap<>();
         userobj.put("email", user.getEmail());
         db.collection("user").document(user.getUid()).set(userobj)
@@ -145,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new CalendarFragment()).commit();
                 break;
             case R.id.nav_lista:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,ListaFragment.newInstance(Event.eventsList)).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ListaFragment()).commit();
                 break;
             case R.id.nav_setari:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new WeekViewFragment()).commit();

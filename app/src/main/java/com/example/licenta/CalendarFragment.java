@@ -108,36 +108,8 @@ public class CalendarFragment extends Fragment {
 //                createAddEventDialog();
         });
 
-        Log.d("CalendarFragment", "No of reminders: " + Notification.reminders.size());
-
         return view;
     }
-
-//    private void createAddEventDialog() {
-//        dialogBuilder=new AlertDialog.Builder(getActivity());
-////        final View popupView=getLayoutInflater().inflate(R.layout.popup_add_event,null);
-//        LayoutInflater inflater= (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View popupView=inflater.inflate(R.layout.popup_add_event,null);
-//
-//        Button btnsave=popupView.findViewById(R.id.btnSave);
-//        TextInputEditText tietDenumire=popupView.findViewById(R.id.tietDenumire);
-//
-//        dialogBuilder.setView(popupView);
-//        dialog=dialogBuilder.create();
-//        dialog.show();
-//
-//        btnsave.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String eventName = tietDenumire.getText().toString();
-//                Event newEvent = new Event(eventName, CalendarUtils.selectedDate, LocalTime.now());
-//                Event.eventsList.add(newEvent);
-//                Toast.makeText(getActivity(),newEvent.toString(),Toast.LENGTH_SHORT).show();
-//                dialog.dismiss();
-//                onResume();
-//            }
-//        });
-//    }
 
     protected void createPopupWindow(LocalDate date, LocalTime timeStart) {
         LayoutInflater inflater= (LayoutInflater) requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -173,15 +145,11 @@ public class CalendarFragment extends Fragment {
                     return;
                 }
                 Event.eventsList.add(newEvent);
-
                 Map<String, Object> eventToAdd = new HashMap<>();
                 updateMapWithEventsFields(eventToAdd,newEvent);
-//                final String[] idDoc = new String[1];
-
                 db.collection("event").add(eventToAdd).addOnSuccessListener(documentReference -> {
                     String idDoc = documentReference.getId();
                     Log.d("CalendarFragment", "New document added with ID: " + idDoc);
-
                     db.collection("user").document(user.getUid())
                             .update("events", FieldValue.arrayUnion(idDoc))
                             .addOnSuccessListener(unused -> {
@@ -190,12 +158,10 @@ public class CalendarFragment extends Fragment {
                                 onResume();
                             })
                             .addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event id to the events list", e));
-
                     createReminderInDatabase(newEvent, idDoc);
                 }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event", e));
             }else if (rbObiectiv.isChecked()){
                 createGoalFromPopupView(popupWindow);
-
             }
         });
         popupView.setOnTouchListener((v, event) -> {
@@ -350,13 +316,12 @@ public class CalendarFragment extends Fragment {
     private void addGoalToDatabase(PopupWindow popupWindow, Goal newGoal) {
         Map<String, Object> goalToAdd = new HashMap<>();
         updateMapWithGoalFields(goalToAdd,newGoal);
-        // Add the new goal to the database
+
         db.collection("goal").add(goalToAdd)
                 .addOnSuccessListener(documentReference -> {
                     String goalId = documentReference.getId();
                     Log.d("CalendarFragment", "New goal added with ID: " + goalId);
 
-                    // Create a list of event IDs for the goal's events
                     List<String> eventIds = new ArrayList<>();
                     for (Event event : newGoal.getEvents()) {
                         Map<String, Object> eventToAdd = new HashMap<>();
@@ -369,11 +334,9 @@ public class CalendarFragment extends Fragment {
                                     eventIds.add(eventId);
                                     Event.eventsList.add(event);
 
-                                    // Update the goal document with the event IDs
                                     db.collection("goal").document(goalId)
                                             .update("eventIds", FieldValue.arrayUnion(eventIds.toArray()))
                                             .addOnSuccessListener(unused -> {
-//                                                Toast.makeText(getActivity(), newGoal.toString(), Toast.LENGTH_SHORT).show();
                                                 if (popupWindow != null && popupWindow.isShowing()) {
                                                     popupWindow.dismiss();
                                                 }
@@ -469,7 +432,7 @@ public class CalendarFragment extends Fragment {
                 return null;
             }
         }else {
-            return scheduleEvent(getContext(),eventName,dataEv,strCategory,60,LocalTime.of(6,0),LocalTime.of(23,59));
+            return scheduleEvent(eventName,dataEv,strCategory,60,LocalTime.of(6,0),LocalTime.of(23,59));
         }
     }
 
@@ -633,3 +596,29 @@ public class CalendarFragment extends Fragment {
         });
     }
 }
+
+//    private void createAddEventDialog() {
+//        dialogBuilder=new AlertDialog.Builder(getActivity());
+////        final View popupView=getLayoutInflater().inflate(R.layout.popup_add_event,null);
+//        LayoutInflater inflater= (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View popupView=inflater.inflate(R.layout.popup_add_event,null);
+//
+//        Button btnsave=popupView.findViewById(R.id.btnSave);
+//        TextInputEditText tietDenumire=popupView.findViewById(R.id.tietDenumire);
+//
+//        dialogBuilder.setView(popupView);
+//        dialog=dialogBuilder.create();
+//        dialog.show();
+//
+//        btnsave.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String eventName = tietDenumire.getText().toString();
+//                Event newEvent = new Event(eventName, CalendarUtils.selectedDate, LocalTime.now());
+//                Event.eventsList.add(newEvent);
+//                Toast.makeText(getActivity(),newEvent.toString(),Toast.LENGTH_SHORT).show();
+//                dialog.dismiss();
+//                onResume();
+//            }
+//        });
+//    }

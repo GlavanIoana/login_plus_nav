@@ -40,7 +40,7 @@ public class PomodoroActivity extends AppCompatActivity {
             spnLista.add(ev.getName());
         }
         Log.d("PomodoroActivitySpnListaSize", String.valueOf(spnLista.size()));
-        spnPomodoro.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item,spnLista));
+        spnPomodoro.setAdapter(new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, spnLista));
 
         skbTimpLucru=findViewById(R.id.skbTimpLucru);
         tvTimpLucru=findViewById(R.id.tvTimpLucru);
@@ -86,24 +86,18 @@ public class PomodoroActivity extends AppCompatActivity {
         imgMinus=findViewById(R.id.imgMinus);
         imgPlus=findViewById(R.id.imgPlus);
 
-        imgMinus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Integer.parseInt(tvNumarSesiuni.getText().toString())>1){
-                    tvNumarSesiuni.setText(String.valueOf(Integer.parseInt(tvNumarSesiuni.getText().toString())-1));
-                }else {
-                    Toast.makeText(getApplicationContext(),"Ati atins limita minima!",Toast.LENGTH_SHORT).show();
-                }
+        imgMinus.setOnClickListener(v -> {
+            if (Integer.parseInt(tvNumarSesiuni.getText().toString())>1){
+                tvNumarSesiuni.setText(String.valueOf(Integer.parseInt(tvNumarSesiuni.getText().toString())-1));
+            }else {
+                Toast.makeText(getApplicationContext(),"Ati atins limita minima!",Toast.LENGTH_SHORT).show();
             }
         });
-        imgPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Integer.parseInt(tvNumarSesiuni.getText().toString())<=10){
-                    tvNumarSesiuni.setText(String.valueOf(Integer.parseInt(tvNumarSesiuni.getText().toString())+1));
-                }else {
-                    Toast.makeText(getApplicationContext(),"Ati atins limita maxima!",Toast.LENGTH_SHORT).show();
-                }
+        imgPlus.setOnClickListener(v -> {
+            if (Integer.parseInt(tvNumarSesiuni.getText().toString())<=10){
+                tvNumarSesiuni.setText(String.valueOf(Integer.parseInt(tvNumarSesiuni.getText().toString())+1));
+            }else {
+                Toast.makeText(getApplicationContext(),"Ati atins limita maxima!",Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -28,7 +28,6 @@ public class Register extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             Intent intent=new Intent(getApplicationContext(), MainActivity.class);
@@ -66,25 +65,25 @@ public class Register extends AppCompatActivity {
                 }
 
                 mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
-                                if (task.isSuccessful()) {
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            progressBar.setVisibility(View.GONE);
+                            if (task.isSuccessful()) {
 //                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    Toast.makeText(Register.this, "Account created.",
-                                            Toast.LENGTH_SHORT).show();
-                                    Intent intent=new Intent(getApplicationContext(),Login.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(Register.this, "Authentication failed. Password should be at least 6 characters.",
-                                            Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Register.this, "Account created.",
+                                        Toast.LENGTH_SHORT).show();
+                                Intent intent=new Intent(getApplicationContext(),Login.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(Register.this, "Authentication failed. Password should be at least 6 characters.",
+                                        Toast.LENGTH_SHORT).show();
 
-                                }
                             }
-                        });
+                        }
+                    });
             }
         });
 

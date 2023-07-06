@@ -1,119 +1,70 @@
 package com.example.licenta;
 
-import static com.example.licenta.CalendarUtils.selectedDate;
-
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.example.licenta.Eisenhower.ApplicationEisenhowerFragment;
+import com.example.licenta.Eisenhower.DescriptionEisenhowerFragment;
+import com.example.licenta.Eisenhower.ViewPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class StatisticiFragment extends Fragment {
-    private PieChart pieChart;
-    private TextView tvMonthDay;
-    private TextView tvDayOfWeek;
-    private TextView tvNoEvents;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_statistici, container, false);
+        // Inflate the layout for this fragment
+        View view= inflater.inflate(R.layout.fragment_statistici, container, false);
 
-        tvMonthDay= view.findViewById(R.id.tvMonthDay);
-        tvDayOfWeek= view.findViewById(R.id.tvDayOfWeek);
-        Button btnNextDay = view.findViewById(R.id.btnNextDay);
-        Button btnPrevDay = view.findViewById(R.id.btnPrevDay);
-        pieChart= view.findViewById(R.id.pieChart);
-        tvNoEvents = view.findViewById(R.id.tvNoEvents);
+        tabLayout=view.findViewById(R.id.tabLayout);
+        viewPager=view.findViewById(R.id.viewPager);
 
-        CalendarUtils.selectedDate = LocalDate.now();
+//        tabLayout.setupWithViewPager(viewPager);
 
-        btnPrevDay.setOnClickListener(v -> {
-            selectedDate = selectedDate.minusDays(1);
-            updateChart();
+        tabLayout.addTab(tabLayout.newTab().setText("Zi"));
+        tabLayout.addTab(tabLayout.newTab().setText("Săptămână"));
+
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(requireActivity());
+        viewPagerAdapter.addFragment(new StatisticiZiFragment(),"Zi");
+        viewPagerAdapter.addFragment(new StatisticiSaptamanaFragment(),"Săptămână");
+        viewPager.setAdapter(viewPagerAdapter);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(viewPagerAdapter.getPageTitle(position))).attach();
+
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                tabLayout.selectTab(tabLayout.getTabAt(position));
+            }
         });
 
-        btnNextDay.setOnClickListener(v -> {
-            selectedDate = selectedDate.plusDays(1);
-            updateChart();
-        });
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
 
-        updateChart();
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
         return view;
     }
-
-    private void updateChart() {
-        tvMonthDay.setText(CalendarUtils.monthDayFromDate(selectedDate));
-        String dayOfWeek=selectedDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
-        tvDayOfWeek.setText(dayOfWeek);
-//
-//        int nrNeinceput = 0;
-//        int nrInceput = 0;
-//        int nrFinalizat = 0;
-
-        ArrayList<Event> events = Event.eventsForDate(selectedDate);
-
-        if (events.isEmpty()) {
-            tvNoEvents.setVisibility(View.VISIBLE);
-            pieChart.setVisibility(View.INVISIBLE);
-        } else {
-            tvNoEvents.setVisibility(View.GONE);
-            pieChart.setVisibility(View.VISIBLE);}
-
-            int nrNeinceput = 0;
-            int nrInceput = 0;
-            int nrFinalizat = 0;
-
-            for (Event event : events) {
-                switch (event.getStatus()) {
-                    case INCEPUT:
-                        nrInceput++;
-                        break;
-                    case FINALIZAT:
-                        nrFinalizat++;
-                        break;
-                    case NEINCEPUT:
-                        nrNeinceput++;
-                        break;
-                }
-            }
-            Log.d("StatisticiFragment", nrNeinceput + " documents with status "+StatusEv.NEINCEPUT+" found");
-            Log.d("StatisticiFragment", nrInceput + " documents with status "+StatusEv.INCEPUT+" found");
-            Log.d("StatisticiFragment", nrFinalizat + " documents with status "+StatusEv.FINALIZAT+" found");
-
-            ArrayList<PieEntry> entries = new ArrayList<>();
-            entries.add(new PieEntry(nrNeinceput, StatusEv.NEINCEPUT.toString()));
-            entries.add(new PieEntry(nrInceput, StatusEv.INCEPUT.toString()));
-            entries.add(new PieEntry(nrFinalizat, StatusEv.FINALIZAT.toString()));
-        Log.d("StatisticiFragment",entries.toString());
-
-            PieDataSet pieDataSet = new PieDataSet(entries, "Stari sarcini");
-            pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-            pieDataSet.setValueTextColor(Color.BLACK);
-            pieDataSet.setValueTextSize(16f);
-            pieChart.setData(new PieData(pieDataSet));
-            pieChart.getDescription().setEnabled(false);
-            pieChart.setCenterText("Productivitate");
-            pieChart.animate();
-            pieChart.invalidate();
-    }
-
 }

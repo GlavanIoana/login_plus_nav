@@ -40,8 +40,6 @@ public class ApplicationEisenhowerFragment extends Fragment {
         llNeurgImp=view.findViewById(R.id.llNeurgImp);
         llUrgNeimp=view.findViewById(R.id.llUrgNeimp);
         llNeurgNeimp=view.findViewById(R.id.llNeurgNeimp);
-
-
         return view;
     }
 
@@ -52,30 +50,10 @@ public class ApplicationEisenhowerFragment extends Fragment {
             spnLista.add(ev.getName());
         }
 
-        llUrgImp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupWindow(llUrgImp);
-            }
-        });
-        llNeurgImp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupWindow(llNeurgImp);
-            }
-        });
-        llUrgNeimp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupWindow(llUrgNeimp);
-            }
-        });
-        llNeurgNeimp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopupWindow(llNeurgNeimp);
-            }
-        });
+        llUrgImp.setOnClickListener(v -> showPopupWindow(llUrgImp));
+        llNeurgImp.setOnClickListener(v -> showPopupWindow(llNeurgImp));
+        llUrgNeimp.setOnClickListener(v -> showPopupWindow(llUrgNeimp));
+        llNeurgNeimp.setOnClickListener(v -> showPopupWindow(llNeurgNeimp));
     }
 
     private void showPopupWindow(LinearLayout layout) {
@@ -83,19 +61,16 @@ public class ApplicationEisenhowerFragment extends Fragment {
         Spinner spinner=popupView.findViewById(R.id.spnPopupEisenhower);
 
         Log.d("Eisenhower apl", String.valueOf(spnLista.size()));
-        spinner.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item,spnLista));
+        spinner.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, spnLista));
         Button btnPopupEisenhower=popupView.findViewById(R.id.btnPopupEisenhower);
-        btnPopupEisenhower.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String selectedValue= (String) spinner.getSelectedItem();
+        btnPopupEisenhower.setOnClickListener(v -> {
+            String selectedValue= (String) spinner.getSelectedItem();
 
-                addCheckbox(layout,selectedValue);
+            addCheckbox(layout,selectedValue);
 
-                spnLista.remove(selectedValue);
+            spnLista.remove(selectedValue);
 
-                dismissPopupDialog();
-            }
+            dismissPopupDialog();
         });
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(popupView);
@@ -108,12 +83,7 @@ public class ApplicationEisenhowerFragment extends Fragment {
         newCheckBox.setText(selectedValue);
         layout.addView(newCheckBox);
 
-        newCheckBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                newCheckBox.setChecked(!newCheckBox.isChecked());
-            }
-        });
+        newCheckBox.setOnClickListener(v -> newCheckBox.setChecked(!newCheckBox.isChecked()));
     }
 
     private void dismissPopupDialog() {

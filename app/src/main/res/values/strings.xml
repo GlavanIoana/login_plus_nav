@@ -109,10 +109,19 @@
         <item>dupa-amiaza</item>
         <item>seara</item>
     </string-array>
+    <string-array name="optiuni_status">
+        <item>FINALIZAT</item>
+        <item>NEINCEPUT</item>
+        <item>INCEPUT</item>
+    </string-array>
     <string name="interval_date_hours">%1$s : %2$s - %3$s</string>
     <string name="selecteaza_toate">Selecteaza toate</string>
     <string name="programeaza">Programeaza</string>
     <string name="anuleaza">Anuleaza</string>
     <string name="preferinta_interval">Preferinta interval</string>
+    <string name="change_status">Change status</string>
+    <string name="da">Da</string>
+    <string name="nu">Nu</string>
+    <string name="salveaza">Salveaza</string>
 
 </resources>

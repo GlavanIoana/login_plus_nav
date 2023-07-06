@@ -2,11 +2,14 @@ package com.example.licenta;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 
 public class Event implements Parcelable {
@@ -24,16 +27,19 @@ public class Event implements Parcelable {
 
         return events;
     }
-    public static ArrayList<Event> eventsForDateAndTime(LocalDate date, LocalTime time)
+    public static ArrayList<Event> eventsForWeek(LocalDate date)
     {
         ArrayList<Event> events = new ArrayList<>();
 
+        LocalDate startDate = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate stopDate=startDate.plusWeeks(1);
+
         for(Event event : eventsList)
         {
-            int eventHour=event.timeStart.getHour();
-            int cellHour=time.getHour();
-            if(event.getDate().equals(date)&&eventHour==cellHour)
+            if (event.getDate().isBefore(stopDate)&&!event.getDate().isBefore(startDate)){
                 events.add(event);
+                Log.d("Event.eventsForWeek",event.getDate().toString());
+            }
         }
 
         return events;

@@ -3,129 +3,133 @@ package com.example.licenta;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListaFragment extends Fragment {
-    private View view;
+    private RecyclerView recyclerView;
     private static String TAG="ListaFragment";
-    private LinearLayout layoutLista;
-    private ArrayList<Event> listaEvenimente=new ArrayList<>();
-
-    FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-    FirebaseFirestore db=FirebaseFirestore.getInstance();
-
-    private static final String ARG_PARAM1 = "lista";
-
-    public ListaFragment() {
-    }
-
-    public static ListaFragment newInstance(ArrayList<Event> lista) {
-        ListaFragment fragment = new ListaFragment();
-        Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_PARAM1, lista);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            listaEvenimente = getArguments().getParcelableArrayList(ARG_PARAM1);
-        }
-    }
+    private FloatingActionButton fabChangeStatus;
+    private EventAdapter eventAdapter;
+    private AlertDialog dialog;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view= inflater.inflate(R.layout.fragment_lista, container, false);
+        View view = inflater.inflate(R.layout.fragment_lista, container, false);
 
-        layoutLista=view.findViewById(R.id.layoutLista);
+        fabChangeStatus = view.findViewById(R.id.fabChangeStatus);
 
-        createCheckBoxes(listaEvenimente);
+        recyclerView = view.findViewById(R.id.rvEventList);
+        eventAdapter = new EventAdapter(requireContext(), R.layout.lv_event_view, Event.eventsList, inflater,fabChangeStatus);
+        recyclerView.setAdapter(eventAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-//        db.collection("event").whereEqualTo("userID",user.getUid()).orderBy("day").orderBy("time start").get()
-//                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                        for (QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
-//                            listaEvenimente.add(citireEvenimentBazaDeDate(documentSnapshot));
-//                        }
-//                    }
-//                });
-                
-                
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    QuerySnapshot snapshot=task.getResult();
-//                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                        Log.d(TAG, document.getId() + " => " + document.getData());
-//                    }
-//                } else {
-//                    Log.d(TAG, "Error getting documents: ", task.getException());
-//                }
-//            }
-//        });
-//                addOnCompleteListener(new OnCompleteListener<AggregateQuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<AggregateQuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    // Count fetched successfully
-//                    AggregateQuerySnapshot snapshot = task.getResult();
-//                    Log.d(TAG, "Count: " + snapshot.getCount());
-//                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                        Log.d(TAG, document.getId() + " => " + document.getData());
-//                    }
-//                    for(int i=0;i<snapshot.getCount();i++){
-//                        CheckBox checkBox=new CheckBox(getContext());
-//                        checkBox.setText(snapshot);
-//                    }
-//                } else {
-//                    Log.d(TAG, "Count failed: ", task.getException());
-//                }
-//            }
-//        });
+        fabChangeStatus.setVisibility(View.GONE); // Initially hide the FloatingActionButton
+        fabChangeStatus.setOnClickListener(v -> {
+            List<Event> selectedEvents = eventAdapter.getSelectedEvents();
+
+            showConfirmationDialog(selectedStatus -> {
+                // Perform your desired action with the selected events
+                // For example, change their status
+                performDatabaseChanges(selectedEvents,selectedStatus);
+
+                eventAdapter.clearSelection();
+                eventAdapter.notifyDataSetChanged();
+                fabChangeStatus.setVisibility(View.GONE);
+            });
+        });
 
         return view;
     }
 
-//    private Event citireEvenimentBazaDeDate(QueryDocumentSnapshot document) {
-//        String denumire=document.getString("name");
-//        DateTimeFormatter formatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
-//        String strData=document.getString("day");
-//        LocalDate data=LocalDate.parse(strData,formatter);
-//        DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern("HH:mm");
-//        String strOraSt=document.getString("time start");
-//        LocalTime oraStart=LocalTime.parse(strOraSt,timeFormatter);
-//        String strOraSf=document.getString("time final");
-//        LocalTime oraSfarsit=LocalTime.parse(strOraSf,timeFormatter);
-//        StatusEv statusEv=StatusEv.valueOf(document.getString("status"));
-//        Event event=new Event(denumire,data,oraStart,oraSfarsit,statusEv);
-//        return event;
-//    }
+    private void showConfirmationDialog(ConfirmationCallback callback) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_view, null);
+
+        // Customize the layout elements as needed
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
+        Spinner spinner=dialogView.findViewById(R.id.spnOptiuniStatus);
+        spinner.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, StatusEv.values()));
+        Button yesButton = dialogView.findViewById(R.id.dialog_yes_button);
+        Button noButton = dialogView.findViewById(R.id.dialog_no_button);
+
+        titleTextView.setText("Schimba statusul");
+
+        // Set the click listeners for the buttons
+        yesButton.setOnClickListener(v -> {
+            StatusEv selectedStatus = (StatusEv) spinner.getSelectedItem();
+            // Invoke the callback when the user confirms
+            callback.onConfirm(selectedStatus);
+            dialog.dismiss();
+        });
+
+        noButton.setOnClickListener(v -> {
+            dialog.dismiss();
+
+            eventAdapter.clearSelection();
+            eventAdapter.notifyDataSetChanged();
+            fabChangeStatus.setVisibility(View.GONE);
+        });
+
+        builder.setView(dialogView);
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    private void performDatabaseChanges(List<Event> selectedEvents, StatusEv selectedStatus) {
+        for (Event event:selectedEvents){
+            event.setStatus(selectedStatus);
+            Query query = db.collection("event")
+                    .whereEqualTo("userID", user.getUid())
+                    .whereEqualTo("day", CalendarUtils.formattedDate(event.getDate()))
+                    .whereEqualTo("time start", CalendarUtils.formattedShortTime(event.getTimeStart()));
+
+            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    // Update the status field in the retrieved event document
+                    DocumentReference eventRef = documentSnapshot.getReference();
+                    eventRef.update("status", selectedStatus);
+
+                    // Notify the user about the successful update
+//                    Toast.makeText(requireContext(), "Status updated successfully", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnFailureListener(e -> {
+                // Handle any potential errors during the query or update process
+                Toast.makeText(requireContext(), "Failed to update status", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Failed to update status", e);
+            });
+        }
+
+
+    }
 
     private void createCheckBoxes(ArrayList<Event> listaEvenimente) {
         for (Event ev:listaEvenimente){
@@ -147,7 +151,7 @@ public class ListaFragment extends Fragment {
                     }
                 }
             });
-            layoutLista.addView(checkBox);
+//            layoutLista.addView(checkBox);
         }
     }
 }

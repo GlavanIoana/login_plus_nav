@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="630dp"
+    android:padding="8dp"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="10dp"
+    android:id="@+id/llFilterPopupWindow"
+    android:background="@drawable/popup_shape"
+    android:backgroundTint="@color/lightgreyteal">
+
+    <TextView
+        android:id="@+id/tvTitlu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:layout_marginTop="16dp"
+        android:text="Filtreaza"
+        android:textColor="@color/lightgray"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/line1"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitlu" />
+
+    <TextView
+        android:id="@+id/tvTitluCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:text="Categorie"
+        android:textColor="@color/lightgray"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/line1" />
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryMunca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluCategory"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterCategorySedinta"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryMunca"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryMunca"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Munca"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategorySedinta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterCategoryMunca"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluCategory"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterCategoryTema"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategorySedinta"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategorySedinta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Sedinta"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryTema"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterCategorySedinta"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluCategory"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryTema"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryTema"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Tema"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryGospodarit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryProiect"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterCategoryAltele"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryGospodarit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryGospodarit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Gospodarit"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryRelaxare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryMunca"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterCategorySport"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryRelaxare"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryRelaxare"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Relaxare"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategorySport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterCategoryRelaxare"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryMunca"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategorySport"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategorySport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Sport"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryProiect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryRelaxare"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterCategoryDeadline"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryProiect"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryProiect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Proiect"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryDeadline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterCategoryProiect"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryRelaxare"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterCategoryIntalnire"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryDeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryDeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Deadline"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryIntalnire"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterCategoryDeadline"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryRelaxare"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryIntalnire"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryIntalnire"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Intalnire"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterCategoryAltele"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterCategoryGospodarit"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryProiect"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterCategoryAltele"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterCategoryAltele"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Altele"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line2"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterCategoryAltele" />
+
+    <TextView
+        android:id="@+id/tvTitluStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:text="Status"
+        android:textColor="@color/lightgray"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/line2" />
+
+    <LinearLayout
+        android:id="@+id/llFilterStatusNeinceput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluStatus"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterStatusInceput"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterStatusNeinceput"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterStatusNeinceput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Neinceput"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterStatusInceput"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterStatusNeinceput"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluStatus"
+        app:layout_constraintEnd_toStartOf="@+id/llFilterStatusFinalizat"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterStatusInceput"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterStatusInceput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Inceput"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llFilterStatusFinalizat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintStart_toEndOf="@+id/llFilterStatusInceput"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluStatus"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/ivFilterStatusFinalizat"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_done_24"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+        <TextView
+            android:id="@+id/tvFilterStatusFinalizat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Finalizat"
+            android:textColor="@color/lightgray"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line3"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterStatusNeinceput" />
+
+    <TextView
+        android:id="@+id/tvTitluObiectiv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:text="Obiectiv"
+        android:textColor="@color/lightgray"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/line3" />
+
+    <LinearLayout
+        android:id="@+id/llFilterSpinnerObiectiv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluObiectiv"
+        android:layout_margin="4dp"
+        android:padding="8dp"
+        >
+    <Spinner
+        android:id="@+id/spnFilterObiectiv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line4"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterSpinnerObiectiv" />
+
+    <TextView
+        android:id="@+id/tvTitluData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:text="Timp"
+        android:textColor="@color/lightgray"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/line4" />
+
+    <LinearLayout
+        android:id="@+id/llFilterSpinnerData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/filter_shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitluData"
+        android:layout_margin="4dp"
+        android:padding="8dp">
+        <Spinner
+            android:id="@+id/spnFilterData"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="20sp"
+            android:entries="@array/spn_filter_data_values"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnApplyFilters"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/llFilterSpinnerData"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:background="@drawable/filter_selected_shape"
+        android:text="@string/salveaza"
+        android:textColor="@color/teal_700"
+        android:textSize="18sp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+<!--<RadioGroup-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content"-->
+<!--app:layout_constraintTop_toBottomOf="@+id/tvTitluData"-->
+<!--app:layout_constraintStart_toStartOf="parent"-->
+<!--app:layout_constraintEnd_toEndOf="parent">-->
+<!--<RadioButton-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:text="Trecut"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:background="@drawable/filter_shape"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+
+<!--<RadioButton-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:text="Azi"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:background="@drawable/filter_shape"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+
+<!--<RadioButton-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:text="Saptamana curenta"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:background="@drawable/filter_shape"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+
+<!--<RadioButton-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:text="Luna curenta"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:background="@drawable/filter_shape"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+
+<!--<RadioButton-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:text="Viitor"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:background="@drawable/filter_shape"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+
+<!--</RadioGroup>-->
+
+    <!--<LinearLayout-->
+<!--android:id="@+id/llRBFilterDataSaptCurenta"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:background="@drawable/filter_shape"-->
+<!--app:layout_constraintStart_toEndOf="@+id/llFilterDataAzi"-->
+<!--app:layout_constraintTop_toBottomOf="@+id/tvTitluData"-->
+<!--app:layout_constraintEnd_toEndOf="parent"-->
+<!--android:layout_margin="4dp"-->
+<!--android:paddingStart="8dp"-->
+<!--android:paddingEnd="8dp">-->
+<!--</LinearLayout>-->
+
+
+<!--<LinearLayout-->
+<!--android:id="@+id/llFilterDataTrecut"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:background="@drawable/filter_shape"-->
+<!--app:layout_constraintStart_toStartOf="parent"-->
+<!--app:layout_constraintTop_toBottomOf="@+id/tvTitluData"-->
+<!--app:layout_constraintEnd_toStartOf="@+id/llFilterDataAzi"-->
+<!--android:layout_margin="4dp"-->
+<!--android:paddingStart="8dp"-->
+<!--android:paddingEnd="8dp">-->
+<!--<ImageView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:src="@drawable/ic_baseline_done_24"-->
+<!--    android:visibility="invisible"/>-->
+<!--<TextView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_gravity="center"-->
+<!--    android:text="Trecut"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+<!--</LinearLayout>-->
+
+<!--<LinearLayout-->
+<!--android:id="@+id/llFilterDataAzi"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:background="@drawable/filter_shape"-->
+<!--app:layout_constraintStart_toEndOf="@+id/llFilterDataTrecut"-->
+<!--app:layout_constraintTop_toBottomOf="@+id/tvTitluData"-->
+<!--app:layout_constraintEnd_toStartOf="@+id/llFilterDataSaptCurenta"-->
+<!--android:layout_margin="4dp"-->
+<!--android:paddingStart="8dp"-->
+<!--android:paddingEnd="8dp">-->
+<!--<ImageView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:src="@drawable/ic_baseline_done_24"-->
+<!--    android:visibility="invisible"/>-->
+<!--<TextView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_gravity="center"-->
+<!--    android:text="Azi"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+<!--</LinearLayout>-->
+
+<!--<LinearLayout-->
+<!--android:id="@+id/llFilterDataSaptCurenta"-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:background="@drawable/filter_shape"-->
+<!--app:layout_constraintStart_toEndOf="@+id/llFilterDataAzi"-->
+<!--app:layout_constraintTop_toBottomOf="@+id/tvTitluData"-->
+<!--app:layout_constraintEnd_toEndOf="parent"-->
+<!--android:layout_margin="4dp"-->
+<!--android:paddingStart="8dp"-->
+<!--android:paddingEnd="8dp">-->
+<!--<ImageView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:src="@drawable/ic_baseline_done_24"-->
+<!--    android:visibility="invisible"/>-->
+<!--<TextView-->
+<!--    android:layout_width="wrap_content"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_gravity="center"-->
+<!--    android:text="Saptamana curenta"-->
+<!--    android:textColor="@color/lightgray"-->
+<!--    android:padding="8dp"-->
+<!--    android:textSize="18dp"/>-->
+<!--</LinearLayout>-->
+<!-- -->

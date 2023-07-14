@@ -1,5 +1,6 @@
 package com.example.licenta;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +19,12 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.EventViewHolder> {
     private List<Object> blockList;
     private boolean showEventHours;
+    private static CalendarFragment calendarFragment;
 
-    public RecyclerViewAdapter(List<Object> blockList, boolean showEventHours) {
-        this.blockList = blockList;
+    public RecyclerViewAdapter(List<Object> blockList, boolean showEventHours,CalendarFragment calendar) {
+        blockList = blockList;
         this.showEventHours = showEventHours;
+        calendarFragment=calendar;
     }
 
     @NonNull
@@ -29,15 +32,24 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View itemView = inflater.inflate(R.layout.item_time_block, parent, false);
-        return new EventViewHolder(itemView);
+        return new EventViewHolder(itemView,this);
     }
+
+//    public void setOnEventClickListener(OnEventClickListener listener) {
+//        this.onEventClickListener = listener;
+//    }
 
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Object item = blockList.get(position);
+        Log.d("RecyclerViewAdapter", "position of block list " + blockList.get(position));
 
         if (item instanceof Event) {
             Event event = (Event) item;
+
+            Log.d("RecyclerViewAdapter", "Event Name: " + event.getName());
+            Log.d("RecyclerViewAdapter", "Event Start Time: " + event.getTimeStart());
+            Log.d("RecyclerViewAdapter", "Event End Time: " + event.getTimeFinal());
 
             holder.titleTextView.setText(event.getName());
             if (showEventHours) {
@@ -63,6 +75,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
             layoutParams.height = calculateBlockHeight(duration);
             holder.itemView.setLayoutParams(layoutParams);
+
+//            holder.llBlock.setOnClickListener(v -> holder.clickOnEventBlock() );
         } else if (item instanceof Integer) {
             int blankBlockHeight = (Integer) item;
             holder.titleTextView.setText("");
@@ -84,7 +98,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     Event previousEvent = (Event) blockList.get(position - 1);
                     long duration = calculateDuration(previousEvent.getTimeFinal(), LocalTime.of(23, 59));
                     blankBlockHeight = calculateBlockHeight(duration);
-                }}else {
+                }
+            }else {
                 long duration = calculateDuration(LocalTime.of(0,0), LocalTime.of(23, 59));
                 blankBlockHeight = calculateBlockHeight(duration);
             }
@@ -122,6 +137,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
+        Log.d("RecyclerViewAdapter getItemCount", String.valueOf(blockList.size()));
         return blockList.size();
     }
 
@@ -134,13 +150,34 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView startTimeTextView;
         TextView endTimeTextView;
         LinearLayout llBlock;
+        RecyclerViewAdapter recyclerViewAdapter;
+//        OnEventClickListener onEventClickListener;
 
-        EventViewHolder(@NonNull View itemView) {
+        EventViewHolder(@NonNull View itemView,RecyclerViewAdapter adapter) {
             super(itemView);
             llBlock=itemView.findViewById(R.id.layout_time_block);
             titleTextView = itemView.findViewById(R.id.tvEventName);
             startTimeTextView = itemView.findViewById(R.id.tvEventStartTime);
             endTimeTextView = itemView.findViewById(R.id.tvEventEndTime);
+            recyclerViewAdapter=adapter;
+//            this.onEventClickListener=listener;
+
+            itemView.setOnClickListener(v -> clickOnEventBlock());
+        }
+
+        private void clickOnEventBlock() {
+            int position = getAdapterPosition();
+            Object item = recyclerViewAdapter.blockList.get(position);
+            if (calendarFragment!=null) {
+                if (item instanceof Event) {
+                    Event event = (Event) item;
+                    Log.d("RecyclerViewAdapter onEventCLick", event.getName());
+                    calendarFragment.createPopupWindow(event);
+                }
+            }else {
+                //TODO trimitere catre day view
+                Log.d("RecyclerViewAdapter onEventCLick","trimitere catre day view");
+            }
         }
     }
 }

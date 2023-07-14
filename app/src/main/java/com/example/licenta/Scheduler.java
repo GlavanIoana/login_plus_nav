@@ -129,7 +129,7 @@ public class Scheduler {
         return eventsForDate;
     }
 
-    public static List<Event> scheduleEventsForGoal(Context context,Goal goal,LocalTime intervalStart,LocalTime intervalEnd) {
+    public static List<Event> scheduleEventsForGoal(Goal goal, LocalDate startDate, LocalTime intervalStart, LocalTime intervalEnd, boolean isForUpdate) {
 //        LocalDateTime startTime,endTime;
 //        if (LocalDate.now().getDayOfWeek()!=DayOfWeek.SUNDAY){
 //            startTime = LocalDateTime.now();
@@ -138,11 +138,15 @@ public class Scheduler {
 //            startTime = LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY)); // Start from next Monday
 //            endTime = startTime.plusWeeks(1);
 //        }
-        LocalDateTime startTime = LocalDateTime.now().minusDays(1).with(TemporalAdjusters.next(DayOfWeek.MONDAY)); // Start from next Monday
-        LocalDateTime endTime = startTime.plusWeeks(1);
+        LocalDate startTime = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY)); // Start from next Monday
+        LocalDate endTime = startTime.plusWeeks(1);
         List<Event> availableIntervals = new ArrayList<>();
 
-        for (int i = 0; i < numWeeksToScheduleEventsAhead; i++) {
+        int startValue=0;
+        if (isForUpdate){
+            startValue=1;
+        }
+        for (int i = startValue; i < numWeeksToScheduleEventsAhead; i++) {
             List<Event> weekIntervals = findAvailableIntervals(startTime, endTime, goal,intervalStart,intervalEnd);
             availableIntervals.addAll(weekIntervals);
             startTime = startTime.plusWeeks(1);
@@ -152,12 +156,12 @@ public class Scheduler {
         return availableIntervals;
     }
 
-    private static List<Event> findAvailableIntervals(LocalDateTime startTime, LocalDateTime endTime, Goal goal,LocalTime intervalStart,LocalTime intervalEnd) {
+    private static List<Event> findAvailableIntervals(LocalDate startTime, LocalDate endTime, Goal goal,LocalTime intervalStart,LocalTime intervalEnd) {
         List<Event> availableIntervals = new ArrayList<>();
         int numOfIntervals = 0;
 
         while (startTime.isBefore(endTime) && numOfIntervals < goal.getFrequency()) {
-            LocalDate currentDate = startTime.toLocalDate();
+            LocalDate currentDate = startTime;
 
             Event event = scheduleEvent(goal.getName(), currentDate, goal.getCategory(), goal.getDuration(),intervalStart,intervalEnd);
 

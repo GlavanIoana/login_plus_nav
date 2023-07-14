@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Goal {
     public static List<Goal> goalsList= new ArrayList<>();
+    private String id;
     private String name;
     private Categories category;
     private long duration;//in minutes
@@ -23,6 +24,22 @@ public class Goal {
         events=new ArrayList<>();
     }
 
+    public List<String> getEventIds(){
+        List<String> eventsIds=new ArrayList<>();
+        for (Event event:events){
+            eventsIds.add(event.getId());
+        }
+        return eventsIds;
+    }
+
+    public static Goal getGoalByName(String name){
+        for (Goal goal:Goal.goalsList){
+            if (goal.getName().equals(name)){
+                return goal;
+            }
+        }
+        return null;
+    }
     public void addEvent(Event event) {
         events.add(event);
     }
@@ -83,5 +100,11 @@ public class Goal {
         this.intervalPref = intervalPref;
     }
 
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 }

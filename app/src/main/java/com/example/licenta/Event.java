@@ -45,6 +45,7 @@ public class Event implements Parcelable {
         return events;
     }
 
+    private String id;
     private String name;
     private LocalDate date;
     private LocalTime timeStart,timeFinal;
@@ -138,5 +139,13 @@ public class Event implements Parcelable {
         dest.writeString(timeFinal.toString());
         dest.writeString(status.toString());
         dest.writeString(category.name());
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

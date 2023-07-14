@@ -1,9 +1,11 @@
 package com.example.licenta;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.licenta.CalendarUtils.selectedDate;
 import static com.example.licenta.StatisticiZiFragment.CATEGORIES_COLORS;
 import static com.example.licenta.StatisticiZiFragment.getCategoriesLongMap;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -15,9 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -33,11 +37,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 public class StatisticiSaptamanaFragment extends Fragment {
     private BarChart barChartCategories, stackedBarChart;
     private TextView tvMonthWeek;
     private TextView tvNoEvents;
+    private TextView tvWeekTimeSpentPomodoro;
+    private TextView tvWeekAverageTimeSpentPomodoro;
+    private LinearLayout llWeekTimeSpentPomodoro;
     private HashMap<Categories, Integer> categoryColors = new HashMap<>();
 
     @Override
@@ -52,6 +61,9 @@ public class StatisticiSaptamanaFragment extends Fragment {
         barChartCategories = view.findViewById(R.id.barChartCategories);
         stackedBarChart = view.findViewById(R.id.stackedBarChart);
         tvNoEvents = view.findViewById(R.id.tvNoEvents);
+        tvWeekTimeSpentPomodoro=view.findViewById(R.id.tvWeekTimeSpentPomodoro);
+        tvWeekAverageTimeSpentPomodoro=view.findViewById(R.id.tvWeekAverageTimeSpentPomodoro);
+        llWeekTimeSpentPomodoro=view.findViewById(R.id.llWeekTimeSpentPomodoro);
 
         categoryColors.put(Categories.MUNCA, ContextCompat.getColor(requireContext(),R.color.calblue));
         categoryColors.put(Categories.SEDINTA, ContextCompat.getColor(requireContext(), R.color.caldarkblue));
@@ -84,8 +96,25 @@ public class StatisticiSaptamanaFragment extends Fragment {
     private void updateCharts() {
         tvMonthWeek.setText(CalendarUtils.monthDayFromDate(selectedDate));
 
+        long timeSpentForWeek=0;
+        ArrayList<LocalDate> datesOfWeek=CalendarUtils.daysInWeekArray(selectedDate);
+        for (LocalDate date:datesOfWeek){
+            String currentDate = date.toString();
+            timeSpentForWeek += getTimeSpentForDay(currentDate);
+        }
+
+        long hours = TimeUnit.MILLISECONDS.toHours(timeSpentForWeek);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(timeSpentForWeek) % 60;
+        tvWeekTimeSpentPomodoro.setText("Total ore de concentrare: "+hours+"h"+minutes+"min.");
+
+        long averageTimeSpentForWeek=timeSpentForWeek/7;
+        hours = TimeUnit.MILLISECONDS.toHours(averageTimeSpentForWeek);
+        minutes = TimeUnit.MILLISECONDS.toMinutes(averageTimeSpentForWeek) % 60;
+        tvWeekAverageTimeSpentPomodoro.setText("Medie: "+hours+"h"+minutes+"min/zi.");
+
         ArrayList<Event> events = Event.eventsForWeek(selectedDate);
 
+        tvNoEvents.setText(R.string.nu_exista_evenimente_saptamana);
         if (events.isEmpty()) {
             tvNoEvents.setVisibility(View.VISIBLE);
             barChartCategories.setVisibility(View.INVISIBLE);
@@ -98,6 +127,11 @@ public class StatisticiSaptamanaFragment extends Fragment {
 
         createBarChart(barChartCategories,events);
         createStackedBarChart(stackedBarChart,events);
+    }
+
+    private long getTimeSpentForDay(String date) {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("TimeSpent", MODE_PRIVATE);
+        return sharedPreferences.getLong(date, 0);
     }
 
     private void createStackedBarChart(BarChart stackedBarChart, ArrayList<Event> events) {
@@ -232,6 +266,12 @@ public class StatisticiSaptamanaFragment extends Fragment {
         barChartCategories.getDescription().setEnabled(false);
         barChartCategories.getAxisRight().setEnabled(false);
         barChartCategories.getLegend().setEnabled(true);
+
+        Description description = new Description();
+        description.setText("Durata totala pentru fiecare categorie"); // Set the desired title
+        description.setTextSize(18f); // Set the desired text size
+        description.setPosition(0f, 0f);
+        barChartCategories.setDescription(description);
 
         barChartCategories.setData(barData);
         barChartCategories.animateY(500);

@@ -1,7 +1,9 @@
 package com.example.licenta;
 
+import static android.content.Context.MODE_PRIVATE;
 import static com.example.licenta.CalendarUtils.selectedDate;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -13,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -29,12 +32,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class StatisticiZiFragment extends Fragment {
     private PieChart pieChartStatus,pieChartCategorie;
     private TextView tvMonthDay;
     private TextView tvDayOfWeek;
     private TextView tvNoEvents;
+    private TextView tvTimeSpentPomodoro;
+    private LinearLayout llTimeSpentPomodoro;
     public static final int[] CATEGORIES_COLORS = {
             Color.rgb(230,230,230),//nedec
             Color.rgb(20,200,234), //munca
@@ -62,6 +68,8 @@ public class StatisticiZiFragment extends Fragment {
         pieChartStatus = view.findViewById(R.id.pieChartStatus);
         pieChartCategorie = view.findViewById(R.id.pieChartCategorie);
         tvNoEvents = view.findViewById(R.id.tvNoEvents);
+        tvTimeSpentPomodoro=view.findViewById(R.id.tvTimeSpentPomodoro);
+        llTimeSpentPomodoro=view.findViewById(R.id.llTimeSpentPomodoro);
 
         CalendarUtils.selectedDate = LocalDate.now();
 
@@ -85,8 +93,20 @@ public class StatisticiZiFragment extends Fragment {
         String dayOfWeek=selectedDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
         tvDayOfWeek.setText(dayOfWeek);
 
+        String currentDate = selectedDate.toString();
+        long timeSpentToday = getTimeSpentForDay(currentDate);
+        if (timeSpentToday==0){
+            llTimeSpentPomodoro.setVisibility(View.GONE);
+        }else {
+            long hours = TimeUnit.MILLISECONDS.toHours(timeSpentToday);
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(timeSpentToday) % 60;
+            llTimeSpentPomodoro.setVisibility(View.VISIBLE);
+            tvTimeSpentPomodoro.setText("Felicitari! Astazi te-ai concentrat "+(hours!=0?(hours+" ore si "):" ")+minutes+" minute.");
+        }
+
         ArrayList<Event> events = Event.eventsForDate(selectedDate);
 
+        tvNoEvents.setText(R.string.nu_sunt_evenimente_programate_in_aceasta_zi);
         if (events.isEmpty()) {
             tvNoEvents.setVisibility(View.VISIBLE);
             pieChartStatus.setVisibility(View.INVISIBLE);
@@ -200,6 +220,11 @@ public class StatisticiZiFragment extends Fragment {
         pieChartStatus.setCenterText("Productivitate (%)");
         pieChartStatus.animate();
         pieChartStatus.invalidate();
+    }
+
+    private long getTimeSpentForDay(String date) {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("TimeSpent", MODE_PRIVATE);
+        return sharedPreferences.getLong(date, 0);
     }
 
 }

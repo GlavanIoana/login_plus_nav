@@ -123,5 +123,15 @@
     <string name="da">Da</string>
     <string name="nu">Nu</string>
     <string name="salveaza">Salveaza</string>
-
+    <string name="nu_exista_evenimente_saptamana">Nu exista evenimente programate in aceasta saptamana!</string>
+    <string name="total_minute_petrecute_din_fiecare_categorie">Total minute petrecute din fiecare categorie</string>
+    <string name="filters">Filters</string>
+    <string-array name="spn_filter_data_values">
+        <item>-</item>
+        <item>Trecut</item>
+        <item>Azi</item>
+        <item>Saptamana curenta</item>
+        <item>Luna curenta</item>
+        <item>Viitor</item>
+    </string-array>
 </resources>

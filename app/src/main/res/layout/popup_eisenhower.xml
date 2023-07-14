@@ -6,7 +6,7 @@
     android:layout_height="200dp"
     android:layout_margin="20dp"
     android:background="@drawable/textview_shape"
-    android:backgroundTint="@color/lightgray"
+    android:backgroundTint="@color/grey"
     android:padding="20dp"
     android:layout_gravity="center"
     android:gravity="center">

@@ -3,10 +3,12 @@ package com.example.licenta.Pomodoro;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 import com.example.licenta.Eisenhower.EisenhowerFragment;
 import com.example.licenta.Event;
 import com.example.licenta.R;
+import com.example.licenta.TimerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ public class PomodoroActivity extends AppCompatActivity {
     private TextView tvTimpPauza,tvTimpLucru,tvNumarSesiuni;
     private ImageView imgMinus,imgPlus;
     private Spinner spnPomodoro;
+    private Button btnStartPomodoro;
     private List<String> spnLista=new ArrayList<>();
 
     @Override
@@ -99,6 +103,18 @@ public class PomodoroActivity extends AppCompatActivity {
             }else {
                 Toast.makeText(getApplicationContext(),"Ati atins limita maxima!",Toast.LENGTH_SHORT).show();
             }
+        });
+
+        btnStartPomodoro=findViewById(R.id.btnStartPomodoro);
+        btnStartPomodoro.setOnClickListener(v -> {
+            int workMinutes = skbTimpLucru.getProgress();
+            int breakMinutes = skbTimpPauza.getProgress();
+
+            Intent intent = new Intent(PomodoroActivity.this, TimerActivity.class);
+            intent.putExtra("work_minutes", workMinutes);
+            intent.putExtra("break_minutes", breakMinutes);
+            intent.putExtra("no_of_sessions", Integer.parseInt(tvNumarSesiuni.getText().toString()));
+            startActivity(intent);
         });
     }
 }

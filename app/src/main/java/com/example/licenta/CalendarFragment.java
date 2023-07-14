@@ -41,8 +41,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -56,7 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class CalendarFragment extends Fragment {
+public class CalendarFragment extends Fragment{
     private TextView tvMonthDay;
     private TextView tvDayOfWeek;
     private RecyclerView recyclerView;
@@ -75,7 +78,7 @@ public class CalendarFragment extends Fragment {
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
 
-    FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+    static FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
     FirebaseFirestore db=FirebaseFirestore.getInstance();
 
     @Override
@@ -103,21 +106,26 @@ public class CalendarFragment extends Fragment {
             setDayView();
         });
         btnAddEvent.setOnClickListener(v -> {
-            Toast.makeText(getActivity(),"Add event",Toast.LENGTH_SHORT).show();
-            createPopupWindow(null,null);
+//            Toast.makeText(getActivity(),"Add event",Toast.LENGTH_SHORT).show();
+            createPopupWindow(null);
 //                createAddEventDialog();
         });
 
         return view;
     }
 
-    protected void createPopupWindow(LocalDate date, LocalTime timeStart) {
+    protected void createPopupWindow(Event event) {
         LayoutInflater inflater= (LayoutInflater) requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupView=inflater.inflate(R.layout.popup_add_event,null);
+        boolean updateExistingEvent=false;
 
         PopupWindow popupWindow = showPopupWindow(popupView);
 
         initializeViews(popupView);
+        if (event!=null){
+            updateExistingEvent=true;
+            populateFieldsWithEventData(event);
+        }
 
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rbEvenUnic) {
@@ -131,7 +139,10 @@ public class CalendarFragment extends Fragment {
         llOraSfarsit.setOnClickListener(this::timePickerDialog);
 
         btnsave=popupView.findViewById(R.id.btnSave);
-        btnsave.setOnClickListener(v -> {
+        boolean finalUpdateExistingEvent = updateExistingEvent;
+        btnsave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
             DateTimeFormatter dateFormatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
             DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern("HH:mm");
 
@@ -140,7 +151,10 @@ public class CalendarFragment extends Fragment {
             }
 
             if (rbEvenUnic.isChecked()) {
-                Event newEvent = createEventFromPopupView(dateFormatter, timeFormatter);
+                if (finalUpdateExistingEvent){
+                    deleteExistingEvent(event);
+                }
+                Event newEvent = createEventFromPopupView(dateFormatter, timeFormatter,event);
                 if (newEvent == null) {
                     return;
                 }
@@ -149,6 +163,7 @@ public class CalendarFragment extends Fragment {
                 updateMapWithEventsFields(eventToAdd,newEvent);
                 db.collection("event").add(eventToAdd).addOnSuccessListener(documentReference -> {
                     String idDoc = documentReference.getId();
+                    newEvent.setId(idDoc);
                     Log.d("CalendarFragment", "New document added with ID: " + idDoc);
                     db.collection("user").document(user.getUid())
                             .update("events", FieldValue.arrayUnion(idDoc))
@@ -163,13 +178,41 @@ public class CalendarFragment extends Fragment {
             }else if (rbObiectiv.isChecked()){
                 createGoalFromPopupView(popupWindow);
             }
-        });
-        popupView.setOnTouchListener((v, event) -> {
+        }});
+        popupView.setOnTouchListener((v,ev) -> {
             popupWindow.dismiss();
 //                onResume();
             return true;
         });
 
+    }
+
+    private void deleteExistingEvent(Event event) {
+        Query query = db.collection("event")
+                .whereEqualTo("userID", user.getUid())
+                .whereEqualTo("day", CalendarUtils.formattedDate(event.getDate()))
+                .whereEqualTo("time start", CalendarUtils.formattedShortTime(event.getTimeStart()));
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                DocumentReference eventRef = documentSnapshot.getReference();
+                eventRef.delete();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(requireContext(), "Failed to delete event", Toast.LENGTH_SHORT).show();
+            Log.e("CalendarFragment deleteExistingEvent", "Failed to delete event", e);
+        });
+
+        Event.eventsList.remove(event);
+    }
+
+    private void populateFieldsWithEventData(Event event) {
+        tietDenumire.setText(event.getName());
+        tvData.setText(CalendarUtils.formattedDate(event.getDate()));
+        tvOraStart.setText(CalendarUtils.formattedShortTime(event.getTimeStart()));
+        tvOraSfarsit.setText(CalendarUtils.formattedShortTime(event.getTimeFinal()));
+        Categories eventCategory = event.getCategory();
+        int categoryIndex = getCategoryIndex(eventCategory);
+        spnCategory.setSelection(categoryIndex);
     }
 
     private void setPopupViewForObiectiv() {
@@ -252,7 +295,7 @@ public class CalendarFragment extends Fragment {
             intervalStart = LocalTime.of(18, 0); // Start of the night
             intervalEnd = LocalTime.of(23, 59); // End of the night
         }
-        List<Event> eventsFound = scheduleEventsForGoal(getContext(),goal,intervalStart,intervalEnd);
+        List<Event> eventsFound = scheduleEventsForGoal(goal,LocalDate.now(),intervalStart,intervalEnd,false);
 
         // Handle the scheduled events (e.g., display them to the user, save to database, etc.)
         handleScheduledEvents(popupWindow,goal,eventsFound);
@@ -321,6 +364,7 @@ public class CalendarFragment extends Fragment {
                 .addOnSuccessListener(documentReference -> {
                     String goalId = documentReference.getId();
                     Log.d("CalendarFragment", "New goal added with ID: " + goalId);
+                    newGoal.setId(goalId);
 
                     List<String> eventIds = new ArrayList<>();
                     for (Event event : newGoal.getEvents()) {
@@ -330,6 +374,7 @@ public class CalendarFragment extends Fragment {
                         db.collection("event").add(eventToAdd)
                                 .addOnSuccessListener(eventDocumentReference -> {
                                     String eventId = eventDocumentReference.getId();
+                                    event.setId(eventId);
                                     Log.d("CalendarFragment", "New event added with ID: " + eventId);
                                     eventIds.add(eventId);
                                     Event.eventsList.add(event);
@@ -354,6 +399,7 @@ public class CalendarFragment extends Fragment {
         goalToAdd.put("duration", newGoal.getDuration());
         goalToAdd.put("frequency", newGoal.getFrequency());
         goalToAdd.put("type frequency", newGoal.getTypeFrequency());
+        goalToAdd.put("interval pref", newGoal.getIntervalPref());
         goalToAdd.put("userID",user.getUid());
     }
 
@@ -402,7 +448,7 @@ public class CalendarFragment extends Fragment {
         return isValid;
     }
 
-    private void updateMapWithEventsFields(Map<String, Object> eventToAdd,Event newEvent) {
+    protected static void updateMapWithEventsFields(Map<String, Object> eventToAdd,Event newEvent) {
         eventToAdd.put("name", newEvent.getName());
         eventToAdd.put("day", CalendarUtils.formattedDate(newEvent.getDate()));
         eventToAdd.put("time start", CalendarUtils.formattedShortTime(newEvent.getTimeStart()));
@@ -412,7 +458,7 @@ public class CalendarFragment extends Fragment {
         eventToAdd.put("userID",user.getUid());
     }
 
-    private Event createEventFromPopupView(DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter) {
+    private Event createEventFromPopupView(DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter, Event event) {
         Categories strCategory=(Categories) spnCategory.getSelectedItem();
         String eventName = tietDenumire.getText().toString();
         String strData = tvData.getText().toString();
@@ -423,7 +469,7 @@ public class CalendarFragment extends Fragment {
         if (!strOraStart.equals(getString(R.string.ora_start)) && !strOraSfarsit.equals(getString(R.string.ora_sfarsit))){
             oraStartEv=LocalTime.parse(strOraStart,timeFormatter);
             oraSfarsitEv=LocalTime.parse(strOraSfarsit,timeFormatter);
-            Event eventFromPopup=new Event(eventName, dataEv, oraStartEv,oraSfarsitEv,StatusEv.NEINCEPUT,strCategory);
+            Event eventFromPopup=new Event(eventName, dataEv, oraStartEv,oraSfarsitEv,event!=null?event.getStatus():StatusEv.NEINCEPUT,strCategory);
             if (checkForOverlaps(eventFromPopup)){//the event can be created
                 //TODO: time final< time start => doua evenimente
                 return eventFromPopup;
@@ -570,7 +616,7 @@ public class CalendarFragment extends Fragment {
         tvMonthDay.setText(CalendarUtils.monthDayFromDate(selectedDate));
         String dayOfWeek=selectedDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
         tvDayOfWeek.setText(dayOfWeek);
-        setRecyclerViewAdapter(new RecyclerViewAdapter(new ArrayList<>(),true));
+        setRecyclerViewAdapter(new RecyclerViewAdapter(new ArrayList<>(),true,this));
     }
 
     private void setRecyclerViewAdapter(RecyclerViewAdapter recyclerViewAdapter) {
@@ -578,6 +624,7 @@ public class CalendarFragment extends Fragment {
         List<Object> blockList = generateBlockList(selectedDate);
         eventAdapter.setBlockList(blockList);
         recyclerView.setAdapter(eventAdapter);
+
 
         recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -595,6 +642,13 @@ public class CalendarFragment extends Fragment {
             }
         });
     }
+
+//    @Override
+//    public void onEventClick(Event event) {
+//        Log.d("CalendarFragment onEventCLick",event.getName());
+//        createPopupWindow(event);
+//
+//    }
 }
 
 //    private void createAddEventDialog() {

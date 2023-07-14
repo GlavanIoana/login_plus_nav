@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class WeekViewFragment extends Fragment {
+public class WeekViewFragment extends Fragment{
     private RecyclerView[] recyclerViews;
     private LocalDate startDate;
     private RecyclerViewAdapter[] eventAdapters;
@@ -59,9 +59,14 @@ public class WeekViewFragment extends Fragment {
 
         // Set layout managers for RecyclerViews (e.g., LinearLayoutManager or GridLayoutManager)
         for (int i = 0; i < 7; i++) {
-            eventAdapters[i] = new RecyclerViewAdapter(new ArrayList<>(), false);
+            eventAdapters[i] = new RecyclerViewAdapter(new ArrayList<>(), false,null);
             recyclerViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
+//            recyclerViews[i].setOnClickListener(v -> {
+//                //TODO trimitere catre day view
+//                Log.d("WeekViewCalendar setWeekView","recyclerView.setOnClickListener");
+//            });
             recyclerViews[i].setAdapter(eventAdapters[i]);
+
         }
 
         Button btnPrev = view.findViewById(R.id.btnPrevWeek);
@@ -77,7 +82,7 @@ public class WeekViewFragment extends Fragment {
             setWeekView();
         });
 
-        setWeekView();
+//        setWeekView();
 
         return view;
     }
@@ -105,7 +110,9 @@ public class WeekViewFragment extends Fragment {
             LocalDate date = startDate.plusDays(i);
             tvDates[i].setText(String.valueOf(date.getDayOfMonth()));
             setRecyclerViewAdapter(eventAdapters[i], date);
+
         }
+
         tvMonthDay.setText(CalendarUtils.monthYearFromDate(startDate));
 
         int contentHeight = nsvWeekView.getChildAt(0).getHeight();
@@ -131,29 +138,18 @@ public class WeekViewFragment extends Fragment {
         List<Object> blockList = new ArrayList<>();
 
         if (!eventsForDate.isEmpty()) {
-            // Sort events by start time
             eventsForDate.sort(Comparator.comparing(Event::getTimeStart));
 
             Event firstEvent = eventsForDate.get(0);
 
             long durationBeforeFirstEvent = eventAdapters[0].calculateDuration(LocalTime.of(0, 0), firstEvent.getTimeStart());
             blockList.add(RecyclerViewAdapter.calculateBlockHeight(durationBeforeFirstEvent));
-
-            // Add the first event
             blockList.add(firstEvent);
-
-            // Add the blank blocks and events
             for (int i = 1; i < eventsForDate.size(); i++) {
                 Event previousEvent = eventsForDate.get(i - 1);
                 Event currentEvent = eventsForDate.get(i);
-
-                // Calculate the duration between the end time of the previous event and the start time of the current event
                 long duration = eventAdapters[0].calculateDuration(previousEvent.getTimeFinal(), currentEvent.getTimeStart());
-
-                // Add the blank block
                 blockList.add(RecyclerViewAdapter.calculateBlockHeight(duration));
-
-                // Add the current event
                 blockList.add(currentEvent);
             }
 
@@ -165,6 +161,7 @@ public class WeekViewFragment extends Fragment {
             blockList.add(RecyclerViewAdapter.calculateBlockHeight(duration));
         }
 
+        Log.d("generateBlockList- blockList.size", String.valueOf(blockList.size()));
         return blockList;
     }
 
@@ -177,4 +174,5 @@ public class WeekViewFragment extends Fragment {
         recyclerViews[5] = view.findViewById(R.id.rvSaturday);
         recyclerViews[6] = view.findViewById(R.id.rvSunday);
     }
+
 }

@@ -73,6 +73,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
+    public void setEvents(List<Event> eventsToShow) {
+        this.events=eventsToShow;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         private LinearLayout llItemData;
         private TextView tvItemTitle;
@@ -106,7 +110,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                     fabChangeStatus.setVisibility(View.GONE);
                 }
 
-                itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.lightgray : android.R.color.transparent));
+                itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.grey : android.R.color.transparent));
                 return true; // Return true to consume the long-press event
             });
             itemView.setOnClickListener(v -> {
@@ -120,7 +124,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                         fabChangeStatus.setVisibility(View.GONE);
                     }
                     // Update the UI to reflect the selection
-                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.lightgray : android.R.color.transparent));
+                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.grey : android.R.color.transparent));
+                }else if (isSelected){
+                    Log.d("EventAdapter setOnCLickListener", "ViewHolder: "+getAdapterPosition()+" - "+isSelected);
+                    isSelected = !isSelected;
+                    Log.d("EventAdapter setOnCLickListener", "selectedEvents.size(): "+String.valueOf(selectedEvents.size()));
+                    itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.grey : android.R.color.transparent));
+
                 }
             });
         }
@@ -133,7 +143,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             addStartingHour(event.getTimeStart());
             addFinishingHour(event.getTimeFinal());
             addStatus(event.getStatus());
-            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.lightgray : android.R.color.transparent));
+            itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.grey : android.R.color.transparent));
         }
 
         private void addStatus(StatusEv status) {

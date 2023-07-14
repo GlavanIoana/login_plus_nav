@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ListaFragment()).commit();
                 break;
             case R.id.nav_setari:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new WeekViewFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SetariFragment()).commit();
                 break;
             case R.id.nav_statistici:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new StatisticiFragment()).commit();

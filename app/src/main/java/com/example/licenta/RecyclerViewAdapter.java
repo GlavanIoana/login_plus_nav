@@ -9,9 +9,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,11 +22,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private List<Object> blockList;
     private boolean showEventHours;
     private static CalendarFragment calendarFragment;
+    private FragmentManager fragmentManager;
+    private LocalDate selectedDate;
 
-    public RecyclerViewAdapter(List<Object> blockList, boolean showEventHours,CalendarFragment calendar) {
-        blockList = blockList;
+    public RecyclerViewAdapter(List<Object> blockList, boolean showEventHours, CalendarFragment calendar, FragmentManager fragmentManager) {
+        this.blockList = blockList;
         this.showEventHours = showEventHours;
         calendarFragment=calendar;
+        this.fragmentManager=fragmentManager;
     }
 
     @NonNull
@@ -141,8 +146,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return blockList.size();
     }
 
-    public void setBlockList(List<Object> blockList) {
+    public void setBlockList(List<Object> blockList, LocalDate date) {
         this.blockList = blockList;
+        this.selectedDate=date;
     }
 
     public static class EventViewHolder extends RecyclerView.ViewHolder {
@@ -177,6 +183,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             }else {
                 //TODO trimitere catre day view
                 Log.d("RecyclerViewAdapter onEventCLick","trimitere catre day view");
+                if (recyclerViewAdapter.fragmentManager!=null) {
+                    recyclerViewAdapter.fragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, CalendarFragment.newInstance(recyclerViewAdapter.selectedDate))
+                            .commit();
+                }
             }
         }
     }

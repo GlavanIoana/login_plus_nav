@@ -38,6 +38,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,10 +82,26 @@ public class CalendarFragment extends Fragment{
     static FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
     FirebaseFirestore db=FirebaseFirestore.getInstance();
 
+    public static CalendarFragment newInstance(LocalDate date) {
+        CalendarFragment fragment = new CalendarFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("selectedDate", date);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.fragment_calendar, container, false);
+
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("selectedDate")) {
+            CalendarUtils.selectedDate = (LocalDate) args.getSerializable("selectedDate");
+            // Use the selectedDate as needed
+        }else {
+            CalendarUtils.selectedDate = LocalDate.now();
+        }
 
         tvMonthDay=view.findViewById(R.id.tvMonthDay);
         tvDayOfWeek=view.findViewById(R.id.tvDayOfWeek);
@@ -93,9 +110,7 @@ public class CalendarFragment extends Fragment{
         Button btnNext = view.findViewById(R.id.btnNextDay);
         Button btnPrev = view.findViewById(R.id.btnPrevDay);
         Button btnAddEvent = view.findViewById(R.id.btnAddEvent);
-
-        CalendarUtils.selectedDate = LocalDate.now();
-//        setDayView();
+        FloatingActionButton fabWeekViewCalendar=view.findViewById(R.id.fabWeekViewCalendar);
 
         btnNext.setOnClickListener(v -> {
             CalendarUtils.selectedDate = CalendarUtils.selectedDate.plusDays(1);
@@ -111,6 +126,14 @@ public class CalendarFragment extends Fragment{
 //                createAddEventDialog();
         });
 
+        fabWeekViewCalendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, WeekViewFragment.newInstance(CalendarUtils.selectedDate))
+                        .commit();
+            }
+        });
         return view;
     }
 
@@ -616,13 +639,13 @@ public class CalendarFragment extends Fragment{
         tvMonthDay.setText(CalendarUtils.monthDayFromDate(selectedDate));
         String dayOfWeek=selectedDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
         tvDayOfWeek.setText(dayOfWeek);
-        setRecyclerViewAdapter(new RecyclerViewAdapter(new ArrayList<>(),true,this));
+        setRecyclerViewAdapter(new RecyclerViewAdapter(new ArrayList<>(),true,this, getParentFragmentManager()));
     }
 
     private void setRecyclerViewAdapter(RecyclerViewAdapter recyclerViewAdapter) {
         eventAdapter = recyclerViewAdapter; // Initialize the adapter with an empty list
         List<Object> blockList = generateBlockList(selectedDate);
-        eventAdapter.setBlockList(blockList);
+        eventAdapter.setBlockList(blockList,selectedDate);
         recyclerView.setAdapter(eventAdapter);
 
 

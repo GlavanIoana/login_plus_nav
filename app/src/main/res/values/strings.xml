@@ -126,6 +126,7 @@
     <string name="nu_exista_evenimente_saptamana">Nu exista evenimente programate in aceasta saptamana!</string>
     <string name="total_minute_petrecute_din_fiecare_categorie">Total minute petrecute din fiecare categorie</string>
     <string name="filters">Filters</string>
+    <string name="weekview_calendar">WeekView Calendar</string>
     <string-array name="spn_filter_data_values">
         <item>-</item>
         <item>Trecut</item>
@@ -133,5 +134,15 @@
         <item>Saptamana curenta</item>
         <item>Luna curenta</item>
         <item>Viitor</item>
+    </string-array>
+    <string-array name="ringtone_entries">
+        <item>Ringtone 1</item>
+        <item>Ringtone 2</item>
+        <item>Ringtone 3</item>
+    </string-array>
+    <string-array name="ringtone_values">
+        <item>ringtone1_uri</item>
+        <item>ringtone2_uri</item>
+        <item>ringtone3_uri</item>
     </string-array>
 </resources>

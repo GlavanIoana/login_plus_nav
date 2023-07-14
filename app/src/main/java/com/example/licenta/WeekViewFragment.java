@@ -30,11 +30,26 @@ public class WeekViewFragment extends Fragment{
     private TextView[] tvDates=new TextView[7];
     private TextView tvMonthDay;
 
+    public static WeekViewFragment newInstance(LocalDate date) {
+        WeekViewFragment fragment = new WeekViewFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("selectedDate", date);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_week_view, container, false);
 
-        startDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("selectedDate")) {
+            LocalDate selectedDate = (LocalDate) args.getSerializable("selectedDate");
+            startDate = selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+            // Use the selectedDate as needed
+        }else {
+            startDate = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        }
 
         initializeTextViewsDates(view);
 
@@ -59,7 +74,7 @@ public class WeekViewFragment extends Fragment{
 
         // Set layout managers for RecyclerViews (e.g., LinearLayoutManager or GridLayoutManager)
         for (int i = 0; i < 7; i++) {
-            eventAdapters[i] = new RecyclerViewAdapter(new ArrayList<>(), false,null);
+            eventAdapters[i] = new RecyclerViewAdapter(new ArrayList<>(), false,null,getParentFragmentManager());
             recyclerViews[i].setLayoutManager(new LinearLayoutManager(getContext()));
 //            recyclerViews[i].setOnClickListener(v -> {
 //                //TODO trimitere catre day view
@@ -127,7 +142,7 @@ public class WeekViewFragment extends Fragment{
 
     private void setRecyclerViewAdapter(RecyclerViewAdapter eventAdapter, LocalDate date) {
         List<Object> blockList = generateBlockList(date);
-        eventAdapter.setBlockList(blockList);
+        eventAdapter.setBlockList(blockList,date);
         eventAdapter.notifyDataSetChanged();
     }
 

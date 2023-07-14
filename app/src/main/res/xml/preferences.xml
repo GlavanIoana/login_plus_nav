@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="pref_key_notification"
+        android:title="Enable Notifications"
+        android:summary="Enable/disable notifications" />
+    <ListPreference
+        android:key="pref_key_ringtone"
+        android:title="Ringtone"
+        android:summary="Select your preferred ringtone"
+        android:entries="@array/ringtone_entries"
+        android:entryValues="@array/ringtone_values"
+        android:defaultValue="default" />
+</PreferenceScreen>

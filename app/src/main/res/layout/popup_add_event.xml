@@ -394,7 +394,7 @@
         android:layout_gravity="center"
         android:background="@drawable/popup_shape"
         android:backgroundTint="@color/lighterteal"
-        android:text="@string/adauga"
+        android:text="@string/salveaza"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"

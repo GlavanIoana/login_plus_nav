@@ -1,11 +1,7 @@
 package com.example.licenta;
 
-import android.content.Context;
-import android.widget.Toast;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -129,7 +125,7 @@ public class Scheduler {
         return eventsForDate;
     }
 
-    public static List<Event> scheduleEventsForGoal(Goal goal, LocalDate startDate, LocalTime intervalStart, LocalTime intervalEnd, boolean isForUpdate) {
+    public static List<Event> scheduleEventsForWeeklyGoal(Goal goal, LocalDate startDate, LocalTime intervalStart, LocalTime intervalEnd, boolean isForUpdate) {
 //        LocalDateTime startTime,endTime;
 //        if (LocalDate.now().getDayOfWeek()!=DayOfWeek.SUNDAY){
 //            startTime = LocalDateTime.now();
@@ -176,4 +172,48 @@ public class Scheduler {
         return availableIntervals;
     }
 
+    public static List<Event> scheduleEventsForDailyGoal(Goal goal, LocalDate startDate, boolean isForUpdate) {
+        LocalDate weekStartDate = startDate; // Start from next Monday
+        LocalDate weekEndDate = startDate.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        List<Event> availableIntervals = new ArrayList<>();
+
+        int startValue=0;
+        if (isForUpdate){
+            startValue=1;
+        }
+        for (int i = startValue; i < numWeeksToScheduleEventsAhead-1; i++) {
+            while (weekStartDate.isBefore(weekEndDate)){
+                List<Event> dayIntervals = findAvailableIntervalsForDay(goal,weekStartDate);
+                availableIntervals.addAll(dayIntervals);
+                weekStartDate = weekStartDate.plusDays(1);
+            }
+            weekStartDate=weekEndDate;
+            weekEndDate = weekEndDate.plusWeeks(1);
+        }
+
+        return availableIntervals;
+    }
+
+    private static List<Event> findAvailableIntervalsForDay(Goal goal, LocalDate date) {
+        List<Event> availableIntervalsForDate = new ArrayList<>();
+
+        int frequency=goal.getFrequency();
+        //setam numarul de intervale in care se vor cauta perioade disponibile in functie de frecventa zilnica setata
+        //durata unui interval=(8:00->23:59)/frequency=16h/freq
+        int durationOfAnInterval=16/frequency;
+        LocalTime startTime=LocalTime.of(7,59);
+        LocalTime endTime=startTime.plusHours(durationOfAnInterval);
+
+        for (int i=0;i<frequency;i++){
+
+            Event event = scheduleEvent(goal.getName(), date, goal.getCategory(), goal.getDuration(),startTime,endTime);
+            if (event != null) {
+                availableIntervalsForDate.add(event);
+            }
+            startTime=endTime;
+            endTime=startTime.plusHours(durationOfAnInterval);
+        }
+
+        return availableIntervalsForDate;
+    }
 }

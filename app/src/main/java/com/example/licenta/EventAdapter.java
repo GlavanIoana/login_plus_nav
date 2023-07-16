@@ -32,22 +32,23 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
     private LayoutInflater inflater;
     private boolean selectionModeEnabled=false;
     private List<Event> selectedEvents;
-    private FloatingActionButton fabChangeStatus;
+    private FloatingActionButton fabChangeStatus,fabDelete;
 
-    public EventAdapter(Context context, int resource, List<Event> objects, LayoutInflater inflater,FloatingActionButton fabChangeStatus) {
+    public EventAdapter(Context context, int resource, List<Event> objects, LayoutInflater inflater,FloatingActionButton fabChangeStatus,FloatingActionButton fabDelete) {
         this.context = context;
         this.resource = resource;
         this.events = objects;
         this.inflater = inflater;
         selectedEvents=new ArrayList<>();
         this.fabChangeStatus=fabChangeStatus;
+        this.fabDelete=fabDelete;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = inflater.inflate(resource, parent, false);
-        return new ViewHolder(view,this,fabChangeStatus);
+        return new ViewHolder(view,this,fabChangeStatus,fabDelete);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         private TextView tvItemStatus;
         private boolean isSelected = false; // Track the selected state
 
-        public ViewHolder(@NonNull View itemView,EventAdapter adapter,FloatingActionButton fabChangeStatus) {
+        public ViewHolder(@NonNull View itemView,EventAdapter adapter,FloatingActionButton fabChangeStatus,FloatingActionButton fabDelete) {
             super(itemView);
             llItemData=itemView.findViewById(R.id.llItemData);
             tvItemTitle = itemView.findViewById(R.id.tvItemTitle);
@@ -100,6 +101,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 // Enable the selection mode
                 selectionModeEnabled = true;
                 fabChangeStatus.setVisibility(View.VISIBLE);
+                fabDelete.setVisibility(View.VISIBLE);
                         // Get the position of the clicked item
                 isSelected = !isSelected;
                 // Update the UI to reflect the selection
@@ -108,6 +110,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                 if (adapter.selectedEvents.isEmpty()){
                     selectionModeEnabled=false;
                     fabChangeStatus.setVisibility(View.GONE);
+                    fabDelete.setVisibility(View.GONE);
                 }
 
                 itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.grey : android.R.color.transparent));
@@ -122,6 +125,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
                     if (adapter.selectedEvents.isEmpty()){
                         selectionModeEnabled=false;
                         fabChangeStatus.setVisibility(View.GONE);
+                        fabDelete.setVisibility(View.GONE);
                     }
                     // Update the UI to reflect the selection
                     itemView.setBackgroundColor(ContextCompat.getColor(itemView.getContext(), isSelected ? R.color.grey : android.R.color.transparent));
@@ -136,7 +140,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         }
 
         public void bind(Event event) {
-            int culoare= ContextCompat.getColor(context, getCuloare(event));
+            int culoare= getCuloare(event);
             llItemData.setBackgroundTintList(ColorStateList.valueOf(culoare));
             addTitle(event.getName());
             addDate(event.getDate());

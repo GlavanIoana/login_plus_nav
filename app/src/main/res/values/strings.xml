@@ -100,7 +100,6 @@
     <string-array name="unitati_frecventa">
         <item>zi</item>
         <item>saptamana</item>
-        <item>luna</item>
     </string-array>
     <string-array name="intervale_preferinta">
         <item>oricare</item>
@@ -127,6 +126,20 @@
     <string name="total_minute_petrecute_din_fiecare_categorie">Total minute petrecute din fiecare categorie</string>
     <string name="filters">Filters</string>
     <string name="weekview_calendar">WeekView Calendar</string>
+    <string name="sterge">Sterge</string>
+    <string name="event_category_colors">Event Category Colors</string>
+    <string name="intalnire">Intalnire</string>
+    <string name="sedinta">Sedinta</string>
+    <string name="munca">Munca</string>
+    <string name="tema">Tema</string>
+    <string name="gospodarit">Gospodarit</string>
+    <string name="relaxare">Relaxare</string>
+    <string name="sport">Sport</string>
+    <string name="proiect">Proiect</string>
+    <string name="deadline">Deadline</string>
+    <string name="altele">Altele</string>
+    <string name="ringtone">Ringtone</string>
+    <string name="selecteaza_o_melodie">Selecteaza o melodie</string>
     <string-array name="spn_filter_data_values">
         <item>-</item>
         <item>Trecut</item>

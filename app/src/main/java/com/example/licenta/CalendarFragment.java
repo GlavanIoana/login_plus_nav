@@ -4,7 +4,8 @@ import static com.example.licenta.CalendarUtils.selectedDate;
 import static com.example.licenta.Scheduler.checkForOverlaps;
 import static com.example.licenta.Scheduler.numWeeksToScheduleEventsAhead;
 import static com.example.licenta.Scheduler.scheduleEvent;
-import static com.example.licenta.Scheduler.scheduleEventsForGoal;
+import static com.example.licenta.Scheduler.scheduleEventsForDailyGoal;
+import static com.example.licenta.Scheduler.scheduleEventsForWeeklyGoal;
 
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -24,6 +25,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
@@ -48,17 +50,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class CalendarFragment extends Fragment{
     private TextView tvMonthDay;
@@ -74,7 +79,7 @@ public class CalendarFragment extends Fragment{
     private RadioButton rbEvenUnic,rbObiectiv;
     private CheckBox cbAll;
     private RecyclerView rvAvailableEvents;
-    private Button btnsave,btnSchedule,btnCancel;
+    private Button btnsave,btnStergeEveniment,btnSchedule,btnCancel;
 
     private AlertDialog.Builder dialogBuilder;
     private AlertDialog dialog;
@@ -161,47 +166,53 @@ public class CalendarFragment extends Fragment{
         llOraStart.setOnClickListener(this::timePickerDialog);
         llOraSfarsit.setOnClickListener(this::timePickerDialog);
 
-        btnsave=popupView.findViewById(R.id.btnSave);
         boolean finalUpdateExistingEvent = updateExistingEvent;
-        btnsave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            DateTimeFormatter dateFormatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern("HH:mm");
+        btnsave.setOnClickListener(v -> {
+        DateTimeFormatter dateFormatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFormatter=DateTimeFormatter.ofPattern("HH:mm");
 
-            if (!checkInputs()) {
+        if (!checkInputs()) {
+            return;
+        }
+
+        if (rbEvenUnic.isChecked()) {
+            if (finalUpdateExistingEvent){
+                deleteExistingEvent(event);
+            }
+            Event newEvent = createEventFromPopupView(dateFormatter, timeFormatter,event);
+            if (newEvent == null) {
                 return;
             }
+            Event.eventsList.add(newEvent);
+            Map<String, Object> eventToAdd = new HashMap<>();
+            updateMapWithEventsFields(eventToAdd,newEvent);
+            db.collection("event").add(eventToAdd).addOnSuccessListener(documentReference -> {
+                String idDoc = documentReference.getId();
+                newEvent.setId(idDoc);
+                Log.d("CalendarFragment", "New document added with ID: " + idDoc);
+                db.collection("user").document(user.getUid())
+                        .update("events", FieldValue.arrayUnion(idDoc))
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(getActivity(), newEvent.toString(), Toast.LENGTH_SHORT).show();
+                            popupWindow.dismiss();
+                            onResume();
+                        })
+                        .addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event id to the events list", e));
+                createReminderInDatabase(newEvent, idDoc);
+            }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event", e));
+        }else if (rbObiectiv.isChecked()){
+            createGoalFromPopupView(popupWindow);
+        }
+    });
 
-            if (rbEvenUnic.isChecked()) {
-                if (finalUpdateExistingEvent){
-                    deleteExistingEvent(event);
-                }
-                Event newEvent = createEventFromPopupView(dateFormatter, timeFormatter,event);
-                if (newEvent == null) {
-                    return;
-                }
-                Event.eventsList.add(newEvent);
-                Map<String, Object> eventToAdd = new HashMap<>();
-                updateMapWithEventsFields(eventToAdd,newEvent);
-                db.collection("event").add(eventToAdd).addOnSuccessListener(documentReference -> {
-                    String idDoc = documentReference.getId();
-                    newEvent.setId(idDoc);
-                    Log.d("CalendarFragment", "New document added with ID: " + idDoc);
-                    db.collection("user").document(user.getUid())
-                            .update("events", FieldValue.arrayUnion(idDoc))
-                            .addOnSuccessListener(unused -> {
-                                Toast.makeText(getActivity(), newEvent.toString(), Toast.LENGTH_SHORT).show();
-                                popupWindow.dismiss();
-                                onResume();
-                            })
-                            .addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event id to the events list", e));
-                    createReminderInDatabase(newEvent, idDoc);
-                }).addOnFailureListener(e -> Log.d("CalendarFragment", "Error adding event", e));
-            }else if (rbObiectiv.isChecked()){
-                createGoalFromPopupView(popupWindow);
+        btnStergeEveniment.setOnClickListener(v -> {
+            if (finalUpdateExistingEvent){
+                deleteExistingEvent(event);
+                popupWindow.dismiss();
+                onResume();
             }
-        }});
+        });
+
         popupView.setOnTouchListener((v,ev) -> {
             popupWindow.dismiss();
 //                onResume();
@@ -229,6 +240,8 @@ public class CalendarFragment extends Fragment{
     }
 
     private void populateFieldsWithEventData(Event event) {
+        btnStergeEveniment.setVisibility(View.VISIBLE);
+        tvTitlu.setText("Editeaza eveniment");
         tietDenumire.setText(event.getName());
         tvData.setText(CalendarUtils.formattedDate(event.getDate()));
         tvOraStart.setText(CalendarUtils.formattedShortTime(event.getTimeStart()));
@@ -318,8 +331,13 @@ public class CalendarFragment extends Fragment{
             intervalStart = LocalTime.of(18, 0); // Start of the night
             intervalEnd = LocalTime.of(23, 59); // End of the night
         }
-        List<Event> eventsFound = scheduleEventsForGoal(goal,LocalDate.now(),intervalStart,intervalEnd,false);
 
+        List<Event> eventsFound =new ArrayList<>();
+        if (Objects.equals(typeFrequency, "saptamana")) {
+            eventsFound = scheduleEventsForWeeklyGoal(goal, LocalDate.now(), intervalStart, intervalEnd, false);
+        }else if (Objects.equals(typeFrequency, "zi")){
+            eventsFound=scheduleEventsForDailyGoal(goal,LocalDate.now(),false);
+        }
         // Handle the scheduled events (e.g., display them to the user, save to database, etc.)
         handleScheduledEvents(popupWindow,goal,eventsFound);
     }
@@ -336,6 +354,9 @@ public class CalendarFragment extends Fragment{
         rvAvailableEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //TODO: sincronizare cbAll cu checkboxuri
+        cbAll.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            availableEventAdapter.setAllEventsSelected(isChecked);
+        });
 
         btnSchedule.setOnClickListener(v -> {
             Goal.goalsList.add(goal);
@@ -507,6 +528,7 @@ public class CalendarFragment extends Fragment{
 
     private void initializeViews(View popupView) {
         tvTitlu=popupView.findViewById(R.id.textView);
+        tvTitlu.setText(R.string.adauga_o_sarcina);
         radioGroup=popupView.findViewById(R.id.radioGroup);
         rbEvenUnic=popupView.findViewById(R.id.rbEvenUnic);
         rbObiectiv=popupView.findViewById(R.id.rbObiectiv);
@@ -538,6 +560,9 @@ public class CalendarFragment extends Fragment{
         rvAvailableEvents=popupView.findViewById(R.id.rvAvailableEvents);
         btnSchedule=popupView.findViewById(R.id.btnSchedule);
         btnCancel=popupView.findViewById(R.id.btnCancel);
+        btnsave=popupView.findViewById(R.id.btnSave);
+        btnStergeEveniment=popupView.findViewById(R.id.btnStergeEveniment);
+        btnStergeEveniment.setVisibility(View.GONE);
     }
 
     private void createReminderInDatabase(Event newEvent, String idDoc) {

@@ -128,4 +128,14 @@ public class TimerActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    @Override
+    public void onBackPressed() {
+        workCountdownTimer.cancel();
+        workTimerState=TimerState.INACTIVE;
+        breakCountdownTimer.cancel();
+        breakTimerState=TimerState.INACTIVE;
+
+        super.onBackPressed();
+    }
+
 }

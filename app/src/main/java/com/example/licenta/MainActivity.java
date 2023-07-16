@@ -1,14 +1,17 @@
 package com.example.licenta;
 
 import static com.example.licenta.CalendarFragment.updateMapWithEventsFields;
-import static com.example.licenta.Scheduler.scheduleEventsForGoal;
+import static com.example.licenta.Scheduler.scheduleEventsForDailyGoal;
+import static com.example.licenta.Scheduler.scheduleEventsForWeeklyGoal;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.preference.PreferenceManager;
 //import androidx.work.Constraints;
 //import androidx.work.ExistingPeriodicWorkPolicy;
 //import androidx.work.NetworkType;
@@ -18,6 +21,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -58,6 +62,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerLayout;
 //    private static final String WORK_TAG = "notification_work";
 
+    public static int COLOR_CATEGORY_MUNCA;
+    public static int COLOR_CATEGORY_TEMA;
+    public static int COLOR_CATEGORY_SEDINTA;
+    public static int COLOR_CATEGORY_INTALNIRE;
+    public static int COLOR_CATEGORY_PROIECT;
+    public static int COLOR_CATEGORY_SPORT;
+    public static int COLOR_CATEGORY_GOSPODARIT;
+    public static int COLOR_CATEGORY_RELAXARE;
+    public static int COLOR_CATEGORY_DEADLINE;
+    public static int COLOR_CATEGORY_ALTELE;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,23 +90,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Event.eventsList.clear();
         db.collection("event").whereEqualTo("userID", user.getUid()).orderBy("day").orderBy("time start").get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        Event.eventsList.add(citireEvenimentBazaDeDate(documentSnapshot));
-                    }
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    Event.eventsList.add(citireEvenimentBazaDeDate(documentSnapshot));
+                }
 //                    updateGoals(()->initializeViews(savedInstanceState));
 
-                    Log.d("MainActivity","s-au citit evenimentele");
-                    db.collection("goal").whereEqualTo("userID", user.getUid()).get()
-                            .addOnSuccessListener(queryDocumentSnapshotsGoals -> {
-                                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshotsGoals) {
-                                    Goal.goalsList.add(readGoalFromDatabase(documentSnapshot));
-                                }
-                                Log.d("MainActivity","s-au citit obiectivele");
-                                updateGoals(() -> initializeViews(savedInstanceState));
-                            });
-                });
+                Log.d("MainActivity","s-au citit evenimentele");
+                db.collection("goal").whereEqualTo("userID", user.getUid()).get()
+                        .addOnSuccessListener(queryDocumentSnapshotsGoals -> {
+                            for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshotsGoals) {
+                                Goal.goalsList.add(readGoalFromDatabase(documentSnapshot));
+                            }
+                            Log.d("MainActivity","s-au citit obiectivele");
+                            updateGoals(() -> initializeViews(savedInstanceState));
+                        });
+            });
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        COLOR_CATEGORY_INTALNIRE = ContextCompat.getColor(this,R.color.calpurple);//sharedPreferences.getInt("pref_key_category_color_intalnire", ContextCompat.getColor(this, R.color.calpurple));
+        COLOR_CATEGORY_SEDINTA = ContextCompat.getColor(this,R.color.caldarkblue);//sharedPreferences.getInt("pref_key_category_color_sedinta", ContextCompat.getColor(this, R.color.caldarkblue));
+        COLOR_CATEGORY_MUNCA = ContextCompat.getColor(this,R.color.calblue);//sharedPreferences.getInt("pref_key_category_color_munca", ContextCompat.getColor(this, R.color.calblue));
+        COLOR_CATEGORY_TEMA = ContextCompat.getColor(this,R.color.calturqouse);//sharedPreferences.getInt("pref_key_category_color_tema", ContextCompat.getColor(this, R.color.calturqouse));
+        COLOR_CATEGORY_GOSPODARIT = ContextCompat.getColor(this,R.color.calgreen);//sharedPreferences.getInt("pref_key_category_color_gospodarit", ContextCompat.getColor(this, R.color.calgreen));
+        COLOR_CATEGORY_RELAXARE =ContextCompat.getColor(this,R.color.calyellow);// sharedPreferences.getInt("pref_key_category_color_relaxare", ContextCompat.getColor(this, R.color.calyellow));
+        COLOR_CATEGORY_SPORT = ContextCompat.getColor(this,R.color.calorange);//sharedPreferences.getInt("pref_key_category_color_sport", ContextCompat.getColor(this, R.color.calorange));
+        COLOR_CATEGORY_PROIECT = ContextCompat.getColor(this,R.color.caldarkorange);//sharedPreferences.getInt("pref_key_category_color_proiect", ContextCompat.getColor(this, R.color.caldarkorange));
+        COLOR_CATEGORY_DEADLINE = ContextCompat.getColor(this,R.color.calred);//sharedPreferences.getInt("pref_key_category_color_deadline", ContextCompat.getColor(this, R.color.calred));
+        COLOR_CATEGORY_ALTELE = ContextCompat.getColor(this,R.color.calpink);//sharedPreferences.getInt("pref_key_category_color_altele", ContextCompat.getColor(this, R.color.calpink));
+
+//        Log.d("MainActivity",getResources().getResourceEntryName(COLOR_CATEGORY_INTALNIRE));
+//        Log.d("MainActivity",getResources().getResourceEntryName(COLOR_CATEGORY_SPORT));
     }
 
 //        notificationManager = NotificationManagerCompat.from(this);
@@ -178,15 +207,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void updateGoals(Runnable callback) {
         Log.d("MainActivity","s-a intrat in updateGoals");
         for (Goal goal:Goal.goalsList){
-            LocalDate lastEventsDate=goal.getEvents().get(0).getDate();
+            LocalDate lastEventsDate=LocalDate.now();
+            if (!goal.getEvents().isEmpty()){
+                lastEventsDate = goal.getEvents().get(0).getDate();
 
-            List<Event> eventsToRemoveFromGoal=new ArrayList<>();
-            for (Event event:goal.getEvents()){
-                if (event.getDate().isBefore(LocalDate.now())){
-                    eventsToRemoveFromGoal.add(event);
-                    //TODO: stergere din array ul goal ului
-                }else if (event.getDate().isAfter(lastEventsDate)){
-                    lastEventsDate=event.getDate();
+                List<Event> eventsToRemoveFromGoal = new ArrayList<>();
+                for (Event event : goal.getEvents()) {
+                    if (event.getDate().isBefore(LocalDate.now())) {
+                        eventsToRemoveFromGoal.add(event);
+                        //TODO: stergere din array ul goal ului
+                    } else if (event.getDate().isAfter(lastEventsDate)) {
+                        lastEventsDate = event.getDate();
+                    }
                 }
             }
 
@@ -222,7 +254,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     isForUpdate=false;
                 }
 
-                List<Event> eventsFound = scheduleEventsForGoal(goal,startDateForUpdate,intervalStart,intervalEnd,isForUpdate);
+                List<Event> eventsFound = new ArrayList<>();
+
+                if (Objects.equals(goal.getTypeFrequency(), "saptamana")) {
+                    eventsFound = scheduleEventsForWeeklyGoal(goal, startDateForUpdate, intervalStart, intervalEnd, isForUpdate);
+                }else if (Objects.equals(goal.getTypeFrequency(), "zi")){
+                    eventsFound=scheduleEventsForDailyGoal(goal,startDateForUpdate,isForUpdate);
+                }
 
 //                for (Event eventNew:eventsFound){
 //                    Event.eventsList.add(eventNew);
@@ -243,11 +281,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                }
 //                updateDatabaseForGoal(goal);
 
+                List<Event> finalEventsFound = eventsFound;
                 addEventsToDatabase(eventsFound)
                         .addOnSuccessListener(documentReferences -> {
                             for (DocumentReference documentReference : documentReferences) {
                                 String idDoc = documentReference.getId();
-                                Event event = eventsFound.get(documentReferences.indexOf(documentReference));
+                                Event event = finalEventsFound.get(documentReferences.indexOf(documentReference));
                                 event.setId(idDoc);
                                 Log.d("CalendarFragment", "New document added with ID: " + idDoc);
 
@@ -294,38 +333,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
     }
 
-    private void updateDatabaseForGoal(Goal goal) {
-        String goalId = goal.getId();
-
-        if (goalId != null) {
-            DocumentReference goalRef = db.collection("goal").document(goalId);
-
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("eventIds", FieldValue.delete());
-
-            // Update the goal document with the cleared eventIds field
-            goalRef.update(updates)
-                    .addOnSuccessListener(aVoid -> {
-                        // Add the updated event IDs to the goal document
-                        goalRef.update("eventIds", goal.getEventIds())
-                                .addOnSuccessListener(aVoid1 -> {
-                                    // Event IDs updated successfully
-                                    // Handle any additional logic or UI updates here
-                                })
-                                .addOnFailureListener(e -> {
-                                    // Error updating eventIds field
-                                    Log.e("CalendarFragment", "Error updating eventIds field for goal", e);
-                                });
-                    })
-                    .addOnFailureListener(e -> {
-                        // Error clearing eventIds field
-                        Log.e("CalendarFragment", "Error clearing eventIds field for goal", e);
-                    });
-        } else {
-            Log.d("CalendarFragment", "Goal ID is null. Unable to update in the database.");
-        }
-    }
-
     private Event citireEvenimentBazaDeDate(QueryDocumentSnapshot document) {
         String denumire=document.getString("name");
         DateTimeFormatter formatter=DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -353,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ListaFragment()).commit();
                 break;
             case R.id.nav_setari:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SetariFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new SettingsFragment()).commit();
                 break;
             case R.id.nav_statistici:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new StatisticiFragment()).commit();

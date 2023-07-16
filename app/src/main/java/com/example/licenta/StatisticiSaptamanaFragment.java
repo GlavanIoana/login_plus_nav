@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PrimitiveIterator;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 
@@ -46,6 +47,8 @@ public class StatisticiSaptamanaFragment extends Fragment {
     private TextView tvNoEvents;
     private TextView tvWeekTimeSpentPomodoro;
     private TextView tvWeekAverageTimeSpentPomodoro;
+    private TextView tvBarChart,tvStackedBarChart;
+    private View lineWeekCharts;
     private LinearLayout llWeekTimeSpentPomodoro;
     private HashMap<Categories, Integer> categoryColors = new HashMap<>();
 
@@ -60,6 +63,9 @@ public class StatisticiSaptamanaFragment extends Fragment {
         Button btnPrevWeek = view.findViewById(R.id.btnStatsPrevWeek);
         barChartCategories = view.findViewById(R.id.barChartCategories);
         stackedBarChart = view.findViewById(R.id.stackedBarChart);
+        tvBarChart=view.findViewById(R.id.tvBarChart);
+        tvStackedBarChart=view.findViewById(R.id.tvStackedBarChart);
+        lineWeekCharts=view.findViewById(R.id.viewWeekCharts);
         tvNoEvents = view.findViewById(R.id.tvNoEvents);
         tvWeekTimeSpentPomodoro=view.findViewById(R.id.tvWeekTimeSpentPomodoro);
         tvWeekAverageTimeSpentPomodoro=view.findViewById(R.id.tvWeekAverageTimeSpentPomodoro);
@@ -119,10 +125,16 @@ public class StatisticiSaptamanaFragment extends Fragment {
             tvNoEvents.setVisibility(View.VISIBLE);
             barChartCategories.setVisibility(View.INVISIBLE);
             stackedBarChart.setVisibility(View.INVISIBLE);
+            tvBarChart.setVisibility(View.INVISIBLE);
+            tvStackedBarChart.setVisibility(View.INVISIBLE);
+            lineWeekCharts.setVisibility(View.INVISIBLE);
         } else {
             tvNoEvents.setVisibility(View.GONE);
             barChartCategories.setVisibility(View.VISIBLE);
             stackedBarChart.setVisibility(View.VISIBLE);
+            tvBarChart.setVisibility(View.VISIBLE);
+            tvStackedBarChart.setVisibility(View.VISIBLE);
+            lineWeekCharts.setVisibility(View.VISIBLE);
         }
 
         createBarChart(barChartCategories,events);

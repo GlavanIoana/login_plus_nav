@@ -38,6 +38,19 @@
         android:contentDescription="@string/change_status"
         android:src="@drawable/ic_baseline_mode_edit_outline_24"
         android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/fabDelete"
+        app:layout_constraintEnd_toEndOf="@+id/rvEventList" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/sterge"
+        android:src="@drawable/ic_baseline_delete_24"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/rvEventList"
         app:layout_constraintEnd_toEndOf="@+id/rvEventList" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,357 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SetariFragment">
+    tools:context=".SetariFragment"
+    android:id="@+id/clParentLayoutSetari">
 
-</RelativeLayout>
+    <LinearLayout
+        android:id="@+id/llRingtone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ringtone"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/selecteaza_o_melodie"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llRingtone"/>
+
+    <TextView
+        android:id="@+id/tvSetariEventCategoryColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/line"
+        android:textColor="@color/teal_700"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/event_category_colors"
+        android:textSize="20sp"
+        android:padding="16dp" />
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryIntalnire"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvSetariEventCategoryColor">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/intalnire"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorIntalnire"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calpurple"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategorySedinta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategoryIntalnire">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/sedinta"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorSedinta"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/caldarkblue"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryMunca"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategorySedinta">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="@string/munca"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorMunca"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calblue"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryTema"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategoryMunca">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/tema"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorTema"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calturqouse"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryGospodarit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategoryTema">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/gospodarit"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorGospodarit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calgreen"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryRelaxare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategoryGospodarit">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="@string/relaxare"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorRelaxare"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calyellow"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategorySport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategoryRelaxare">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:text="@string/sport"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorSport"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calorange"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryProiect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategorySport">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/proiect"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorProiect"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/caldarkorange"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryDeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategoryProiect">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/deadline"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorDeadline"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calred"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llColorCategoryAltele"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llColorCategoryDeadline">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/altele"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:layout_marginStart="8dp"/>
+
+        <ImageView
+            android:id="@+id/viewColorAltele"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_background"
+            android:backgroundTint="@color/calpink"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

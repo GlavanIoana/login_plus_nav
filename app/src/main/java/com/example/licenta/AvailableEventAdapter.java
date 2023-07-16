@@ -68,4 +68,12 @@ public class AvailableEventAdapter extends RecyclerView.Adapter<AvailableEventAd
         }
         return selected;
     }
+
+    public void setAllEventsSelected(boolean check) {
+//TODO set all the checkboxes in the adapter checked
+        for (int i = 0; i < selectedEvents.size(); i++) {
+            selectedEvents.set(i, check);
+        }
+        notifyDataSetChanged();
+    }
 }

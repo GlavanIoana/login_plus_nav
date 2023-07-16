@@ -75,7 +75,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 holder.titleTextView.setTextAppearance(android.R.style.TextAppearance_Small);
             }
             int culoare = getCuloare(event);
-            holder.llBlock.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),culoare));
+            holder.llBlock.setBackgroundColor(culoare);
+//            holder.llBlock.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(),culoare));
             long duration = calculateDuration(event.getTimeStart(), event.getTimeFinal());
             ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
             layoutParams.height = calculateBlockHeight(duration);
@@ -117,16 +118,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     protected static int getCuloare(Event event) {
         int culoare;
         switch (event.getCategory()){
-            case INTALNIRE:culoare=R.color.calpurple;break;
-            case SEDINTA:culoare=R.color.caldarkblue;break;
-            case MUNCA: culoare=R.color.calblue;break;
-            case TEMA:culoare=R.color.calturqouse;break;
-            case GOSPODARIT:culoare=R.color.calgreen;break;
-            case RELAXARE:culoare=R.color.calyellow;break;
-            case SPORT:culoare=R.color.calorange;break;
-            case PROIECT:culoare=R.color.caldarkorange;break;
-            case DEADLINE:culoare=R.color.calred;break;
-            default:culoare=R.color.calpink;break;
+            case INTALNIRE:culoare=MainActivity.COLOR_CATEGORY_INTALNIRE;break;
+            case SEDINTA:culoare=MainActivity.COLOR_CATEGORY_SEDINTA;break;
+            case MUNCA: culoare=MainActivity.COLOR_CATEGORY_MUNCA;break;
+            case TEMA:culoare=MainActivity.COLOR_CATEGORY_TEMA;break;
+            case GOSPODARIT:culoare=MainActivity.COLOR_CATEGORY_GOSPODARIT;break;
+            case RELAXARE:culoare=MainActivity.COLOR_CATEGORY_RELAXARE;break;
+            case SPORT:culoare=MainActivity.COLOR_CATEGORY_SPORT;break;
+            case PROIECT:culoare=MainActivity.COLOR_CATEGORY_PROIECT;break;
+            case DEADLINE:culoare=MainActivity.COLOR_CATEGORY_DEADLINE;break;
+            default:culoare=MainActivity.COLOR_CATEGORY_ALTELE;break;
         }
 
         return culoare;

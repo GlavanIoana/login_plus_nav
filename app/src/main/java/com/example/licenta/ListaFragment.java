@@ -2,6 +2,7 @@ package com.example.licenta;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -45,7 +46,7 @@ import java.util.Set;
 public class ListaFragment extends Fragment {
     private RecyclerView recyclerView;
     private static String TAG="ListaFragment";
-    private FloatingActionButton fabChangeStatus;
+    private FloatingActionButton fabChangeStatus,fabDelete;
     private FloatingActionButton fabFilters;
     private EventAdapter eventAdapter;
     private AlertDialog dialog;
@@ -63,11 +64,12 @@ public class ListaFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_lista, container, false);
 
         fabChangeStatus = view.findViewById(R.id.fabChangeStatus);
+        fabDelete = view.findViewById(R.id.fabDelete);
         fabFilters = view.findViewById(R.id.fabFilters);
 
         eventsToShow =Event.eventsList;
         recyclerView = view.findViewById(R.id.rvEventList);
-        eventAdapter = new EventAdapter(requireContext(), R.layout.lv_event_view, eventsToShow, inflater,fabChangeStatus);
+        eventAdapter = new EventAdapter(requireContext(), R.layout.lv_event_view, eventsToShow, inflater,fabChangeStatus,fabDelete);
         recyclerView.setAdapter(eventAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
@@ -81,11 +83,109 @@ public class ListaFragment extends Fragment {
                 eventAdapter.clearSelection();
                 eventAdapter.notifyDataSetChanged();
                 fabChangeStatus.setVisibility(View.GONE);
+                fabDelete.setVisibility(View.GONE);
+            });
+        });
+
+        fabDelete.setVisibility(View.GONE);
+        fabDelete.setOnClickListener(v -> {
+            List<Event> selectedEvents = eventAdapter.getSelectedEvents();
+
+            showConfirmDeleteDialog(() -> {
+                deleteEvents(selectedEvents);
+
+                eventAdapter.clearSelection();
+                eventAdapter.setEvents(eventsToShow);
+                eventAdapter.notifyDataSetChanged();
+                fabChangeStatus.setVisibility(View.GONE);
+                fabDelete.setVisibility(View.GONE);
             });
         });
 
         fabFilters.setOnClickListener(v -> createFiltersPopupWindow());
         return view;
+    }
+
+    private void showConfirmDeleteDialog(ConfirmDeleteCallback callback) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Confirma stergerea")
+                .setMessage("Esti sigur ca vrei sa stergi aceste evenimente?")
+                .setPositiveButton("Sterge", (dialog, which) -> {
+                    // Perform the deletion of events
+                    callback.onConfirm();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Anuleaza", (dialog, which) -> {
+                    // Cancel the deletion
+                    dialog.dismiss();
+
+                    eventAdapter.clearSelection();
+                    eventAdapter.setEvents(eventsToShow);
+                    eventAdapter.notifyDataSetChanged();
+                    fabChangeStatus.setVisibility(View.GONE);
+                    fabDelete.setVisibility(View.GONE);
+                });
+
+        dialog = builder.create();
+        dialog.show();
+
+    }
+
+    private void showConfirmationDialog(ConfirmationCallback callback) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_view, null);
+
+        // Customize the layout elements as needed
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
+        Spinner spinner=dialogView.findViewById(R.id.spnOptiuniStatus);
+        spinner.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, StatusEv.values()));
+        Button yesButton = dialogView.findViewById(R.id.dialog_yes_button);
+        Button noButton = dialogView.findViewById(R.id.dialog_no_button);
+
+        titleTextView.setText("Schimba statusul");
+
+        // Set the click listeners for the buttons
+        yesButton.setOnClickListener(v -> {
+            StatusEv selectedStatus = (StatusEv) spinner.getSelectedItem();
+            // Invoke the callback when the user confirms
+            callback.onConfirm(selectedStatus);
+            dialog.dismiss();
+        });
+
+        noButton.setOnClickListener(v -> {
+            dialog.dismiss();
+
+            eventAdapter.clearSelection();
+            eventAdapter.notifyDataSetChanged();
+            fabChangeStatus.setVisibility(View.GONE);
+            fabDelete.setVisibility(View.GONE);
+        });
+
+        builder.setView(dialogView);
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    private void deleteEvents(List<Event> selectedEvents) {
+        for (Event event:selectedEvents){
+            Query query = db.collection("event")
+                    .whereEqualTo("userID", user.getUid())
+                    .whereEqualTo("day", CalendarUtils.formattedDate(event.getDate()))
+                    .whereEqualTo("time start", CalendarUtils.formattedShortTime(event.getTimeStart()));
+            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    DocumentReference eventRef = documentSnapshot.getReference();
+                    eventRef.delete();
+                }
+                Event.eventsList.remove(event);
+
+//                eventsToShow.remove(event);
+            }).addOnFailureListener(e -> {
+                Toast.makeText(requireContext(), "Failed to delete event", Toast.LENGTH_SHORT).show();
+                Log.e("CalendarFragment deleteExistingEvent", "Failed to delete event", e);
+            });
+
+        }
     }
 
     private void createFiltersPopupWindow() {
@@ -107,7 +207,6 @@ public class ListaFragment extends Fragment {
                 String layoutIdString = getResources().getResourceEntryName(view.getId());
                 String ivIdString=layoutIdString.replace("ll","iv");
                 String tvIdString=layoutIdString.replace("ll","tv");
-                //TODO: get the text view and the image view with these ids
                 int ivId = getResources().getIdentifier(ivIdString, "id", "com.example.licenta");
                 int tvId = getResources().getIdentifier(tvIdString, "id", "com.example.licenta");
                 ImageView iv = popupView.findViewById(ivId);
@@ -306,40 +405,6 @@ public class ListaFragment extends Fragment {
         return popupWindow;
     }
 
-    private void showConfirmationDialog(ConfirmationCallback callback) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_view, null);
-
-        // Customize the layout elements as needed
-        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
-        Spinner spinner=dialogView.findViewById(R.id.spnOptiuniStatus);
-        spinner.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, StatusEv.values()));
-        Button yesButton = dialogView.findViewById(R.id.dialog_yes_button);
-        Button noButton = dialogView.findViewById(R.id.dialog_no_button);
-
-        titleTextView.setText("Schimba statusul");
-
-        // Set the click listeners for the buttons
-        yesButton.setOnClickListener(v -> {
-            StatusEv selectedStatus = (StatusEv) spinner.getSelectedItem();
-            // Invoke the callback when the user confirms
-            callback.onConfirm(selectedStatus);
-            dialog.dismiss();
-        });
-
-        noButton.setOnClickListener(v -> {
-            dialog.dismiss();
-
-            eventAdapter.clearSelection();
-            eventAdapter.notifyDataSetChanged();
-            fabChangeStatus.setVisibility(View.GONE);
-        });
-
-        builder.setView(dialogView);
-        dialog = builder.create();
-        dialog.show();
-    }
-
     private void performDatabaseChanges(List<Event> selectedEvents, StatusEv selectedStatus) {
         for (Event event:selectedEvents){
             event.setStatus(selectedStatus);
@@ -363,8 +428,6 @@ public class ListaFragment extends Fragment {
                 Log.e(TAG, "Failed to update status", e);
             });
         }
-
-
     }
 
     private void createCheckBoxes(ArrayList<Event> listaEvenimente) {

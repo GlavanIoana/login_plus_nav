@@ -11,4 +11,58 @@
         android:entries="@array/ringtone_entries"
         android:entryValues="@array/ringtone_values"
         android:defaultValue="default" />
+    <PreferenceCategory
+        android:title="Event Category Colors">
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_intalnire"
+            android:title="Intalnire"
+            android:defaultValue="@color/calpurple" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_sedinta"
+            android:title="Sedinta"
+            android:defaultValue="@color/caldarkblue" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_munca"
+            android:title="Munca"
+            android:defaultValue="@color/calblue" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_tema"
+            android:title="Tema"
+            android:defaultValue="@color/calturqouse" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_gospodarit"
+            android:title="Gospodarit"
+            android:defaultValue="@color/calgreen" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_relaxare"
+            android:title="Relaxare"
+            android:defaultValue="@color/calyellow" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_sport"
+            android:title="Sport"
+            android:defaultValue="@color/calorange" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_proiect"
+            android:title="Proiect"
+            android:defaultValue="@color/caldarkorange" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_deadline"
+            android:title="Deadline"
+            android:defaultValue="@color/calred" />
+
+        <com.example.licenta.ColorPreference
+            android:key="pref_key_category_color_altele"
+            android:title="Altele"
+            android:defaultValue="@color/calpink" />
+
+    </PreferenceCategory>
 </PreferenceScreen>

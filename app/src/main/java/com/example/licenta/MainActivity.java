@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         });
             });
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         COLOR_CATEGORY_INTALNIRE = ContextCompat.getColor(this,R.color.calpurple);//sharedPreferences.getInt("pref_key_category_color_intalnire", ContextCompat.getColor(this, R.color.calpurple));
         COLOR_CATEGORY_SEDINTA = ContextCompat.getColor(this,R.color.caldarkblue);//sharedPreferences.getInt("pref_key_category_color_sedinta", ContextCompat.getColor(this, R.color.caldarkblue));
         COLOR_CATEGORY_MUNCA = ContextCompat.getColor(this,R.color.calblue);//sharedPreferences.getInt("pref_key_category_color_munca", ContextCompat.getColor(this, R.color.calblue));
@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 boolean isForUpdate=true;
                 LocalDate startDateForUpdate;
                 if (sundayForLastScheduledEvent.isAfter(LocalDate.now())){
-                    startDateForUpdate=sundayForLastScheduledEvent;
+                    startDateForUpdate=sundayForLastScheduledEvent.plusDays(1);
                 }else {
                     startDateForUpdate=LocalDate.now();
                     isForUpdate=false;

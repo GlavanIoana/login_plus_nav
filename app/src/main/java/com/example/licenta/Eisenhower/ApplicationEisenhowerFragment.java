@@ -1,6 +1,6 @@
 package com.example.licenta.Eisenhower;
 
-import android.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,13 +18,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.licenta.Event;
 import com.example.licenta.R;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 
@@ -33,6 +32,8 @@ public class ApplicationEisenhowerFragment extends Fragment {
     private LinearLayout llNeurgImp;
     private LinearLayout llUrgNeimp;
     private LinearLayout llNeurgNeimp;
+    private LinearLayout llClearMatrix;
+
     private AlertDialog dialog;
     private Set<String> spnSet;
     private SharedPreferences sharedPreferences;
@@ -47,6 +48,7 @@ public class ApplicationEisenhowerFragment extends Fragment {
         llNeurgImp=view.findViewById(R.id.llNeurgImp);
         llUrgNeimp=view.findViewById(R.id.llUrgNeimp);
         llNeurgNeimp=view.findViewById(R.id.llNeurgNeimp);
+        llClearMatrix=view.findViewById(R.id.llClearMatrix);
 
         return view;
     }
@@ -69,20 +71,47 @@ public class ApplicationEisenhowerFragment extends Fragment {
         llNeurgImp.setOnClickListener(v -> showPopupWindow(llNeurgImp));
         llUrgNeimp.setOnClickListener(v -> showPopupWindow(llUrgNeimp));
         llNeurgNeimp.setOnClickListener(v -> showPopupWindow(llNeurgNeimp));
+        llClearMatrix.setOnClickListener(v -> confirmClearMatrixDialog());
+    }
+
+    private void confirmClearMatrixDialog() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(requireContext());
+        builder.setTitle("Confirma stergerea")
+                .setMessage("Esti sigur ca vrei sa stergi prioritatile setate?")
+                .setPositiveButton("Sterge", (dialog, which) -> {
+                    clearMatrixAndSharedPrefs();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Anuleaza", (dialog, which) -> {
+                    dialog.dismiss();
+                });
+
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    private void clearMatrixAndSharedPrefs() {
+        for (String selectedValue : spnSet) {
+            String key=selectedValue + "_layout";
+            if (sharedPreferences.contains(key)) {
+                editor.remove(key);
+                editor.apply();
+            }
+        }
+
+        llUrgNeimp.removeAllViews();
+        llUrgImp.removeAllViews();
+        llNeurgNeimp.removeAllViews();
+        llNeurgImp.removeAllViews();
     }
 
     private void populateLayoutsWithSavedData() {
         for (String selectedValue : spnSet) {
             String layoutIdentifier = sharedPreferences.getString(selectedValue + "_layout", "");
-            boolean checkboxState = sharedPreferences.getBoolean(selectedValue + "_checkbox", false);
 
             LinearLayout layout = getLayoutFromIdentifier(layoutIdentifier);
             if (layout != null) {
-                addCheckbox(layout, selectedValue,false);
-                CheckBox checkBox = getCheckBoxFromLayout(layout, selectedValue);
-                if (checkBox != null) {
-                    checkBox.setChecked(checkboxState);
-                }
+                addTextView(layout, selectedValue,false);
             }
         }
     }
@@ -100,19 +129,6 @@ public class ApplicationEisenhowerFragment extends Fragment {
         return null;
     }
 
-    private CheckBox getCheckBoxFromLayout(LinearLayout layout, String selectedValue) {
-        for (int i = 0; i < layout.getChildCount(); i++) {
-            View view = layout.getChildAt(i);
-            if (view instanceof CheckBox) {
-                CheckBox checkBox = (CheckBox) view;
-                if (checkBox.getText().toString().equals(selectedValue)) {
-                    return checkBox;
-                }
-            }
-        }
-        return null;
-    }
-
     private void showPopupWindow(LinearLayout layout) {
         View popupView=LayoutInflater.from(getContext()).inflate(R.layout.popup_eisenhower,null);
         Spinner spinner=popupView.findViewById(R.id.spnPopupEisenhower);
@@ -122,34 +138,29 @@ public class ApplicationEisenhowerFragment extends Fragment {
         Button btnPopupEisenhower=popupView.findViewById(R.id.btnPopupEisenhower);
         btnPopupEisenhower.setOnClickListener(v -> {
             String selectedValue= (String) spinner.getSelectedItem();
-
-            addCheckbox(layout,selectedValue,true);
-
-//            spnLista.remove(selectedValue);
-
+            addTextView(layout,selectedValue,true);
             dismissPopupDialog();
         });
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setView(popupView);
         dialog = builder.create();
         dialog.show();
     }
 
-    private void addCheckbox(LinearLayout layout, String selectedValue,boolean saveToSharedPrefs) {
-        CheckBox newCheckBox=new CheckBox(getContext());
-        newCheckBox.setText(selectedValue);
-        layout.addView(newCheckBox);
+    private void addTextView(LinearLayout layout, String selectedValue, boolean saveToSharedPrefs) {
+        TextView newTextView = new TextView(getContext());
+        newTextView.setText(selectedValue);
+        layout.addView(newTextView);
 
-        newCheckBox.setOnClickListener(v -> {
-            // Save the layout identifier and checkbox state in SharedPreferences
-            if (saveToSharedPrefs){
-                editor.putString(selectedValue + "_layout", getLayoutIdentifier(layout));  // Store the layout state
-                editor.putBoolean(selectedValue + "_checkbox", newCheckBox.isChecked());  // Store the checkbox state
-                editor.apply();
+        if (saveToSharedPrefs){
+            if (sharedPreferences.contains(selectedValue + "_layout")) {
+                System.out.println("Cheia este deja salvata");
+                return;
             }
+            editor.putString(selectedValue + "_layout", getLayoutIdentifier(layout));  // Store the layout state
+            editor.apply();
+        }
 
-            newCheckBox.setChecked(!newCheckBox.isChecked());
-        });
     }
 
     private String getLayoutIdentifier(LinearLayout layout) {

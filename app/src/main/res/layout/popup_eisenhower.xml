@@ -15,7 +15,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
         <Spinner
             android:id="@+id/spnPopupEisenhower"
             android:layout_width="0dp"
@@ -31,7 +32,8 @@
             app:srcCompat="@drawable/plus_24"
             android:backgroundTint="@color/lightteal"
             android:layout_gravity="end"
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <Button
